@@ -8,13 +8,13 @@
   ],
   "license": "MIT",
   "author": "Loïc Vincent-Genod (https://github.com/VGLoic)",
-  "homepage": "https://github.com/VGLoic/ethtesting",
+  "homepage": "https://github.com/VGLoic/eth-testing",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VGLoic/ethtesting.git"
+    "url": "git+https://github.com/VGLoic/eth-testing.git"
   },
   "bugs": {
-    "url": "https://github.com/VGLoic/ethtesting/issues"
+    "url": "https://github.com/VGLoic/eth-testing/issues"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
