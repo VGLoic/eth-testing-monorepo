@@ -1,0 +1,11 @@
+.contract-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.contract-box-form {
+  display: flex;
+  flex-direction: column;
+  margin-left: 24px;
+}
