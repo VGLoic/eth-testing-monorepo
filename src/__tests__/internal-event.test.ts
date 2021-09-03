@@ -9,7 +9,7 @@ describe("internal events handling", () => {
     provider.on("test-event", firstCallback);
     provider.on("test-event", secondCallback);
 
-    testingUtils.emit("test-event", { a: 1 });
+    testingUtils.lowLevel.emit("test-event", { a: 1 });
 
     expect(firstCallback).toHaveBeenCalledTimes(1);
     expect(firstCallback).toHaveBeenCalledWith({ a: 1 });
@@ -18,7 +18,7 @@ describe("internal events handling", () => {
 
     provider.removeListener("test-event", secondCallback);
 
-    testingUtils.emit("test-event", { a: 2 });
+    testingUtils.lowLevel.emit("test-event", { a: 2 });
 
     expect(firstCallback).toHaveBeenCalledTimes(2);
     expect(firstCallback).toHaveBeenCalledWith({ a: 2 });
