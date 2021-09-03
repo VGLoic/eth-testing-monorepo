@@ -55,7 +55,7 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
         mockRequest: mockManager.mockRequest.bind(
           mockManager
         ) as MockManager["mockRequest"],
-      }
+      },
     },
     generateContractUtils,
   };
