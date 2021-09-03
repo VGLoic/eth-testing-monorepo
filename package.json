@@ -1,6 +1,6 @@
 {
   "name": "eth-testing",
-  "version": "1.0.1-alpha",
+  "version": "1.0.2-alpha",
   "description": "A set of tools in order to generate a mock Web3 Provider and simulate blockchain interactions in tests.",
   "keywords": [
     "test",
