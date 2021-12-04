@@ -28,12 +28,7 @@
     "test": "jest",
     "test:cover": "jest --coverage",
     "test:example": "cd example && npm run test",
-    "format": "prettier src example/src --write",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "format": "prettier src example/src --write"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
