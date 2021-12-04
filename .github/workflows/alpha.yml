@@ -65,10 +65,6 @@ jobs:
           node-version: '16.x'
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - run: npm test
-      - run: npm run test:example
-      - run: npm run test:cover
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
