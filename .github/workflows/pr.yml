@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         node: [ '14', '16' ]
-    name: Node ${{ matrix.node }} - Test
+    name: Node ${{ matrix.node }} - Setup
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         node: [ '14', '16' ]
-    name: Node ${{ matrix.node }} - Test
+    name: Node ${{ matrix.node }} - Example Test
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
