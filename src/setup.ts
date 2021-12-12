@@ -1,11 +1,12 @@
 import { JsonFragment } from "@ethersproject/abi";
 import { MetaMaskProvider } from "./metamask";
+import { WalletConnectProvider } from "./wallet-connect";
 import { Provider } from "./provider";
 import { MockManager } from "./mock-manager";
 import { ContractUtils } from "./contract-utils";
 
 type SetupOptions = {
-  providerType: "MetaMask" | "default";
+  providerType: "MetaMask" | "WalletConnect" | "default";
 };
 
 const defaultSetupOptions: SetupOptions = {
@@ -16,11 +17,13 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
   const provider =
     options.providerType === "MetaMask"
       ? new MetaMaskProvider()
+      : options.providerType === "WalletConnect"
+      ? new WalletConnectProvider()
       : new Provider();
 
   const mockManager = new MockManager(provider);
 
-  const mockChainId = (chainId: string) => {
+  const mockChainId = (chainId: string | number) => {
     mockManager.mockRequest("eth_chainId", chainId, { persistent: true });
   };
   const mockAccounts = (accounts: string[]) => {
