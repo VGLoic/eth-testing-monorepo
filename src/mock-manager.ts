@@ -44,7 +44,7 @@ export class MockManager {
         );
         return this;
       }
-      this.provider.requestMocks[method].filter(
+      this.provider.requestMocks[method] = this.provider.requestMocks[method].filter(
         (mock) => mock !== currentUnconditionalPersistentMock
       );
     }
