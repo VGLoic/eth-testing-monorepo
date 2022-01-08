@@ -16,6 +16,19 @@ export class Provider {
     }
   }
 
+  public once(eventName: string, callback: Subscriber) {
+    const topics = this.topics;
+    const updatedCallback = (args: unknown) => {
+      topics[eventName] = topics[eventName].filter(cb => cb === callback);
+      return callback(args)
+    }
+    if (this.topics[eventName]) {
+      this.topics[eventName].push(updatedCallback);
+    } else {
+      this.topics[eventName] = [updatedCallback];
+    }
+  }
+
   public removeListener(eventName: string, callback: Subscriber) {
     const subscribers = this.topics[eventName];
     if (!subscribers) return;
