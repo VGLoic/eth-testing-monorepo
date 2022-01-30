@@ -15,10 +15,10 @@ An example of a simple decentralized React application is available in the `exam
 The recommend way to use Eth-Testing with an application is to install it a development dependency:
 ```shell
 # If you use npm:
-npm install eth-testing --save-dev
+npm install eth-testing@alpha --save-dev
 
 # Or if you use Yarn:
-yarn add eth-testing --dev
+yarn add eth-testing@alpha --dev
 ```
 
 ## Usage and API description
