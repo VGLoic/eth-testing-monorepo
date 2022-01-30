@@ -4,6 +4,7 @@ import { WalletConnectProvider } from "./wallet-connect";
 import { Provider } from "./provider";
 import { MockManager } from "./mock-manager";
 import { ContractUtils } from "./contract-utils";
+import { MockOptions } from "./types";
 
 type SetupOptions = {
   providerType: "MetaMask" | "WalletConnect" | "default";
@@ -40,6 +41,25 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
     mockManager.emit("accountsChanged", newAccounts);
   };
 
+
+  /**
+   * Mock the next eth_requestAccounts request
+   * @param accountsOrError Resolved accounts or rejected error
+   * @param mockOptions Mock options
+   * @example
+   * ```ts
+   * // The next eth_requestAccounts request will return the array of address
+   * testingUtils.mockRequestAccounts(["0x138071e4e810f34265bd833be9c5dd96f01bd8a5"]);
+   * ...
+   * // The next eth_requestAccounts request will fail with the error
+   * const error = { code: -32002 };
+   * testingUtils.mockRequestAccounts(error, { shouldThrow: true });
+   * ```
+   */
+  const mockRequestAccounts = (accountsOrError: unknown, mockOptions?: MockOptions) => {
+    mockManager.mockRequest("eth_requestAccounts", accountsOrError, mockOptions);
+  };
+
   const generateContractUtils = (abi: JsonFragment[]) =>
     new ContractUtils(mockManager, abi);
 
@@ -50,6 +70,7 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
       mockAccounts,
       mockChainChanged,
       mockAccountsChanged,
+      mockRequestAccounts,
       clearAllMocks: mockManager.clearAllMocks.bind(
         mockManager
       ) as MockManager["clearAllMocks"],

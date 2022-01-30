@@ -72,6 +72,11 @@ testingUtils.mockChainChanged("0x3");
 // Simulate a change of account to 0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf
 testingUtils.mockAccountsChanged(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
 ```
+- `mockRequestAccounts`: allows to mock the connection request in the case of MetaMask
+```TypeScript
+// Mock the next request to eth_requestAccounts as 0x138071e4e810f34265bd833be9c5dd96f01bd8a5
+testingUtils.mockRequestAccounts(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
+```
 
 Additionally, the `generateContractUtils` is exposed from the setup and allows to generate high level utils for contract interactions based on their ABI.
 ```TypeScript
