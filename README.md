@@ -21,6 +21,59 @@ npm install eth-testing@alpha --save-dev
 yarn add eth-testing@alpha --dev
 ```
 
+## Example preview
+
+The `example` folder contains a fully tested simple application. It allows a user to connect with MetaMask and interact with a smart contract. The test of the loading of the full app is shown as an example.
+```TypeScript
+test("user is able to connect by clicking on the connect button, the wallet informations and smart contract values are shown", async () => {
+    const contractTestingUtils = generateContractUtils(ABI);
+
+    // Start with no accounts - the wallet is not connected
+    testingUtils.mockAccounts([]);
+
+    // After the eth_requestAccounts has finished
+    // - the account will be "0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf",
+    // - the chain will be "0x1",
+    // - the call to the `value` method of the smart contract will resolved with 100
+    testingUtils.mockRequestAccounts(
+        ["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"],
+        {
+            chainId: "0x1",
+            triggerCallback: () => {
+                contractTestingUtils.mockCall("value", ["100"]);
+            }
+        }
+    );
+
+    render(<App />);
+
+    const connectButton = screen.getByRole("button", { name: /connect/i });
+    userEvent.click(connectButton);
+
+    await waitForElementToBeRemoved(() => screen.getByRole("button", { name: /connect/i }));
+
+    const accountElement = screen.getByText(/account/i);
+    const chainIdElement = screen.getByText(/chain id/i);
+
+    expect(accountElement).toHaveTextContent("Account:");
+    expect(chainIdElement).toHaveTextContent("Chain ID:");
+
+    const contractBoxValueElement = screen.getByText(/current value/i);
+    expect(contractBoxValueElement).toHaveTextContent("Current value:");
+
+    await waitFor(() => {
+        expect(accountElement).toHaveTextContent(
+            "Account: 0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"
+        );
+        expect(chainIdElement).toHaveTextContent("Chain ID: 0x1");
+    });
+
+    await waitFor(() => {
+        expect(contractBoxValueElement).toHaveTextContent("Current value: 100");
+    });
+})
+```
+
 ## Usage and API description
 
 The first step is to generate the utils
@@ -72,7 +125,7 @@ testingUtils.mockChainChanged("0x3");
 // Simulate a change of account to 0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf
 testingUtils.mockAccountsChanged(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
 ```
-- `mockRequestAccounts`: allows to mock the connection request in the case of MetaMask
+- `mockRequestAccounts`: this is a special utils created in the case of MetaMask, it allows to mock the connection request. The accounts will automatically be mocked to the input value once the connection has been simulated.
 ```TypeScript
 // Mock the next request to eth_requestAccounts as 0x138071e4e810f34265bd833be9c5dd96f01bd8a5
 testingUtils.mockRequestAccounts(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
