@@ -4,7 +4,11 @@ import { WalletConnectProvider } from "./wallet-connect";
 import { Provider } from "./provider";
 import { MockManager } from "./mock-manager";
 import { ContractUtils } from "./contract-utils";
-import { MockOptions } from "./types";
+
+type MockRequestAccountsOptions = {
+  chainId?: string;
+  triggerCallback?: () => void;
+}
 
 type SetupOptions = {
   providerType: "MetaMask" | "WalletConnect" | "default";
@@ -43,21 +47,23 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
 
 
   /**
-   * Mock the next eth_requestAccounts request
-   * @param accountsOrError Resolved accounts or rejected error
-   * @param mockOptions Mock options
+   * Mock the next eth_requestAccounts request and persistently mock the accounts once the latter request has been triggered
+   * @param accounts Resolved accounts
+   * @param options.chainId If present, the chain ID will also be mocked with this value once the request has been triggered
+   * @param options.triggerCallback Optional additional callback to be triggered with the request. The existing callback will at least mock the eth_accounts
    * @example
    * ```ts
-   * // The next eth_requestAccounts request will return the array of address
-   * testingUtils.mockRequestAccounts(["0x138071e4e810f34265bd833be9c5dd96f01bd8a5"]);
-   * ...
-   * // The next eth_requestAccounts request will fail with the error
-   * const error = { code: -32002 };
-   * testingUtils.mockRequestAccounts(error, { shouldThrow: true });
+   * // The next eth_requestAccounts request will return the array of address and be set on MainNet
+   * testingUtils.mockRequestAccounts(["0x138071e4e810f34265bd833be9c5dd96f01bd8a5"], { chainId: "0x1" });
    * ```
    */
-  const mockRequestAccounts = (accountsOrError: unknown, mockOptions?: MockOptions) => {
-    mockManager.mockRequest("eth_requestAccounts", accountsOrError, mockOptions);
+  const mockRequestAccounts = (accounts: string[], options: MockRequestAccountsOptions = {}) => {
+    const completedTriggerCallback = () => {
+      mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
+      if (options.chainId) mockManager.mockRequest("eth_chainId", options.chainId, { persistent: true });
+      if (options.triggerCallback) options.triggerCallback();
+    }
+    mockManager.mockRequest("eth_requestAccounts", accounts, { triggerCallback: completedTriggerCallback });
   };
 
   const generateContractUtils = (abi: JsonFragment[]) =>

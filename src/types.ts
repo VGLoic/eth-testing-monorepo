@@ -3,6 +3,7 @@ export type MockOptions = {
   shouldThrow?: boolean;
   timeout?: number;
   condition?: (params: unknown[]) => boolean;
+  triggerCallback?: (data?: unknown, params?: unknown[]) => void
 };
 
 export type MockRequest = {
