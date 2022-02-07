@@ -17,7 +17,8 @@ npm install
 npm test
 ```
 
-There are two tests:
+There are three tests:
+- `app.test.tsx`: about connection with MetaMask eth_requestAccounts
 - `header.test.tsx`: about account and network display
 - `contract-box.test.tsx`: about contract interaction
 

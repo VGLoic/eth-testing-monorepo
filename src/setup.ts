@@ -5,6 +5,11 @@ import { Provider } from "./provider";
 import { MockManager } from "./mock-manager";
 import { ContractUtils } from "./contract-utils";
 
+type MockRequestAccountsOptions = {
+  chainId?: string;
+  triggerCallback?: () => void;
+}
+
 type SetupOptions = {
   providerType: "MetaMask" | "WalletConnect" | "default";
 };
@@ -40,6 +45,27 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
     mockManager.emit("accountsChanged", newAccounts);
   };
 
+
+  /**
+   * Mock the next eth_requestAccounts request and persistently mock the accounts once the latter request has been triggered
+   * @param accounts Resolved accounts
+   * @param options.chainId If present, the chain ID will also be mocked with this value once the request has been triggered
+   * @param options.triggerCallback Optional additional callback to be triggered with the request. The existing callback will at least mock the eth_accounts
+   * @example
+   * ```ts
+   * // The next eth_requestAccounts request will return the array of address and be set on MainNet
+   * testingUtils.mockRequestAccounts(["0x138071e4e810f34265bd833be9c5dd96f01bd8a5"], { chainId: "0x1" });
+   * ```
+   */
+  const mockRequestAccounts = (accounts: string[], options: MockRequestAccountsOptions = {}) => {
+    const completedTriggerCallback = () => {
+      mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
+      if (options.chainId) mockManager.mockRequest("eth_chainId", options.chainId, { persistent: true });
+      if (options.triggerCallback) options.triggerCallback();
+    }
+    mockManager.mockRequest("eth_requestAccounts", accounts, { triggerCallback: completedTriggerCallback });
+  };
+
   const generateContractUtils = (abi: JsonFragment[]) =>
     new ContractUtils(mockManager, abi);
 
@@ -50,6 +76,7 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
       mockAccounts,
       mockChainChanged,
       mockAccountsChanged,
+      mockRequestAccounts,
       clearAllMocks: mockManager.clearAllMocks.bind(
         mockManager
       ) as MockManager["clearAllMocks"],

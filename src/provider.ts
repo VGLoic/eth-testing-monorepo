@@ -42,27 +42,30 @@ export class Provider {
     method: string;
     params: unknown[];
   }) {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<{ data: unknown; callback?: (data?: unknown, params?: unknown[]) => void }>((resolve, reject) => {
       const mock = this.findMock(method, params);
-      if (mock) {
-        if (!mock.persistent) {
-          this.requestMocks[method] = this.requestMocks[method].filter(
-            (m) => mock !== m
-          );
-        }
-        setTimeout(() => {
-          if (mock.shouldThrow) {
-            reject(mock.data);
-          } else {
-            resolve(mock.data);
-          }
-        }, mock.timeout || 0);
-      } else {
-        resolve(undefined);
+      if (!mock) {
+        resolve({ data: undefined });
+        return;
       }
+      if (!mock.persistent) {
+        this.requestMocks[method] = this.requestMocks[method].filter(
+          (m) => mock !== m
+        );
+      }
+      setTimeout(() => {
+        if (mock.shouldThrow) {
+          reject(mock.data);
+        } else {
+          resolve({ data: mock.data, callback: mock.triggerCallback });
+        }
+      }, mock.timeout || 0);
     });
-    const result = await promise;
-    return result;
+    const { data, callback } = await promise;
+    if (callback) {
+      callback(data, params);
+    }
+    return data;
   }
 
   private findMock(method: string, params: unknown[]) {
