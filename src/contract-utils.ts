@@ -1,4 +1,4 @@
-import { Interface, JsonFragment } from "@ethersproject/abi";
+import { Fragment, Interface, JsonFragment } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
@@ -25,7 +25,7 @@ export class ContractUtils {
   private mockManager: MockManager;
   private contractInterface: Interface;
 
-  constructor(mockManager: MockManager, abi: readonly JsonFragment[]) {
+  constructor(mockManager: MockManager, abi: readonly (string | JsonFragment | Fragment)[]) {
     this.mockManager = mockManager;
     this.contractInterface = new Interface(abi);
   }

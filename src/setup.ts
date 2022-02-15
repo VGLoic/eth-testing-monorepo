@@ -1,4 +1,4 @@
-import { JsonFragment } from "@ethersproject/abi";
+import { Fragment, JsonFragment } from "@ethersproject/abi";
 import { MetaMaskProvider } from "./metamask";
 import { WalletConnectProvider } from "./wallet-connect";
 import { Provider } from "./provider";
@@ -66,7 +66,7 @@ export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
     mockManager.mockRequest("eth_requestAccounts", accounts, { triggerCallback: completedTriggerCallback });
   };
 
-  const generateContractUtils = (abi: JsonFragment[]) =>
+  const generateContractUtils = (abi: (string | JsonFragment | Fragment)[]) =>
     new ContractUtils(mockManager, abi);
 
   return {
