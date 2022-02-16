@@ -3,6 +3,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
 import { MockManager } from "./mock-manager";
+import { MockOptions } from "./types";
 
 type CallOptions = {
   contractAddress?: string;
@@ -15,19 +16,15 @@ type TxOptions = {
   txValues?: readonly any[];
 };
 
-type MockOptions = {
-  persistent?: boolean;
-  shouldThrow?: boolean;
-  timeout?: number;
-};
-
 export class ContractUtils {
   private mockManager: MockManager;
   private contractInterface: Interface;
+  private address?: string;
 
-  constructor(mockManager: MockManager, abi: readonly (string | JsonFragment | Fragment)[]) {
+  constructor(mockManager: MockManager, abi: readonly (string | JsonFragment | Fragment)[], address?: string) {
     this.mockManager = mockManager;
     this.contractInterface = new Interface(abi);
+    this.address = address;
   }
 
   public mockCall(
@@ -37,11 +34,12 @@ export class ContractUtils {
     mockOptions: MockOptions = {}
   ) {
     const { contractAddress, callValues } = callOptions;
+    const toAddress = contractAddress || this.address;
     const condition = (params: unknown[]) => {
       const ethCallParams = params as [{ to: string; data: string }, string];
       const { to, data } = ethCallParams[0];
-      const isTargetedContract = contractAddress
-        ? contractAddress === to
+      const isTargetedContract = toAddress
+        ? toAddress.toLowerCase() === to.toLowerCase()
         : true;
       const isTargetedFunction = callValues
         ? data ===
@@ -88,7 +86,8 @@ export class ContractUtils {
 
     const [mockedAccount] = accountMock.data as string[];
     const fromAddress = from || mockedAccount;
-    const toAddress = to || "0x138071e4e810f34265bd833be9c5dd96f01bd8a5";
+
+    const toAddress = to || this.address;
     const condition = (params: readonly unknown[]) => {
       const estimateGasOrSendTransactionParams = params as [
         { from: string; to: string; data: string }
@@ -98,9 +97,12 @@ export class ContractUtils {
         ? data ===
           this.contractInterface.encodeFunctionData(functionName, txValues)
         : data.startsWith(this.contractInterface.getSighash(functionName));
+      const isTargetedContract = toAddress
+        ? toAddress.toLowerCase() === to.toLowerCase()
+        : true;
       return (
         from.toLowerCase() === fromAddress.toLowerCase() &&
-        to.toLowerCase() === toAddress.toLowerCase() &&
+        isTargetedContract &&
         isTargetedFunction
       );
     };
@@ -139,10 +141,11 @@ export class ContractUtils {
     });
     const blockHash =
       "0xdafc0b053f0728212d1a7bf7f12b883107db7a2ef949a28c2483cabaf187255c";
+    const defaultContractAddress = "0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf";
     const txReceipt: ContractReceipt = {
-      to: toAddress,
+      to: toAddress || defaultContractAddress,
       from: fromAddress,
-      contractAddress: toAddress,
+      contractAddress: toAddress || defaultContractAddress,
       transactionIndex: 1,
       gasUsed: BigNumber.from(1),
       logsBloom: "",
