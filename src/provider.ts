@@ -99,7 +99,7 @@ export class Provider {
       mockDescription = "No mock has been found. 'undefined' will be resolved.";
     } else {
       mockDescription = `
-Mock found: \n
+Mock found:
 - Data: ${JSON.stringify(mock.data, null, 4)}
 - Persistent: ${mock.persistent ? "yes" : "no"}
 - Conditional: ${mock.condition ? "yes" : "no"}
