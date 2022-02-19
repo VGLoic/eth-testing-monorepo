@@ -12,19 +12,21 @@ type MockRequestAccountsOptions = {
 
 type SetupOptions = {
   providerType: "MetaMask" | "WalletConnect" | "default";
+  verbose?: boolean;
 };
 
 const defaultSetupOptions: SetupOptions = {
   providerType: "default",
+  verbose: false
 };
 
-export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
+export function setupEthTesting({ providerType, verbose }: SetupOptions = defaultSetupOptions) {
   const provider =
-    options.providerType === "MetaMask"
-      ? new MetaMaskProvider()
-      : options.providerType === "WalletConnect"
-      ? new WalletConnectProvider()
-      : new Provider();
+    providerType === "MetaMask"
+      ? new MetaMaskProvider({ verbose })
+      : providerType === "WalletConnect"
+      ? new WalletConnectProvider({ verbose })
+      : new Provider({ verbose });
 
   const mockManager = new MockManager(provider);
 

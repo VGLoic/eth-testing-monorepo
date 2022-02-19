@@ -3,10 +3,20 @@ import { MockRequest } from "./types";
 type Subscriber = (args: unknown) => unknown;
 type Topics = Record<string, Subscriber[]>;
 
+type ProviderConstructorArgs = {
+  verbose?: boolean;
+}
+
 export class Provider {
   public requestMocks: Record<string, MockRequest[]> = {};
 
   public topics: Topics = {};
+
+  public verbose: boolean;
+
+  constructor({ verbose }: ProviderConstructorArgs) {
+    this.verbose = Boolean(verbose);
+  }
 
   public on(eventName: string, callback: Subscriber) {
     if (this.topics[eventName]) {
@@ -44,6 +54,9 @@ export class Provider {
   }) {
     const promise = new Promise<{ data: unknown; callback?: (data?: unknown, params?: unknown[]) => void }>((resolve, reject) => {
       const mock = this.findMock(method, params);
+      if (this.verbose) {
+        this.logRequest(method, params, mock);
+      }
       if (!mock) {
         resolve({ data: undefined });
         return;
@@ -78,5 +91,26 @@ export class Provider {
     if (conditionalMock) return conditionalMock;
     const standardMock = mocks.find((mock) => !Boolean(mock.condition));
     return standardMock || null;
+  }
+
+  private logRequest(method: string, params: unknown[], mock: MockRequest | null) {
+    let mockDescription: string;
+    if (!mock) {
+      mockDescription = "No mock has been found. 'undefined' will be resolved.";
+    } else {
+      mockDescription = `
+Mock found: \n
+- Data: ${JSON.stringify(mock.data, null, 4)}
+- Persistent: ${mock.persistent ? "yes" : "no"}
+- Conditional: ${mock.condition ? "yes" : "no"}
+- Should throw: ${mock.shouldThrow ? "yes" : "no"}
+`
+    }
+    console.log(`
+#### [eth-testing] - start log ####
+Request intercepted: { method: ${method}, params: ${params} }
+${mockDescription}
+#### [eth-testing] - end log ####
+`)
   }
 }
