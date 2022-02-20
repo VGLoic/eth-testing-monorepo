@@ -1,6 +1,4 @@
-import { MetaMaskProvider } from "./metamask";
-import { WalletConnectProvider } from "./wallet-connect";
-import { Provider } from "./provider";
+import { MetaMaskProvider, WalletConnectProvider, Provider } from "./providers";
 import { MockManager } from "./mock-manager";
 import { TestingUtils } from "./testing-utils";
 

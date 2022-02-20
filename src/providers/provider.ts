@@ -1,4 +1,4 @@
-import { MockRequest } from "./types";
+import { MockRequest } from "../types";
 
 type Subscriber = (args: unknown) => unknown;
 type Topics = Record<string, Subscriber[]>;
