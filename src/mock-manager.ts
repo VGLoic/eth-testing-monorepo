@@ -1,5 +1,5 @@
 import { Provider } from "./providers";
-import { MockOptions, MockRequest } from "./types";
+import { MockOptions, MockRequest, MockCondition } from "./types";
 
 export class MockManager {
   private provider: Provider;
@@ -52,6 +52,18 @@ export class MockManager {
     };
 
     if (isConditionalMock) {
+      const currentConditionalPersistentMock = this.findConditionalPersistentMock(method, condition as MockCondition);
+      if (currentConditionalPersistentMock) {
+        if (!isPersistent) {
+          console.warn(
+            `There is only a persistent registered mock for ${method} with this condition, this additional mocking will not be considered.`
+          );
+          return this;
+        }
+        this.provider.requestMocks[method] = this.provider.requestMocks[method].filter(
+          (mock) => mock !== currentConditionalPersistentMock
+        );
+      }
       return this.registerMock(method, mockRequest);
     }
 
@@ -89,6 +101,12 @@ export class MockManager {
     const mocks = this.provider.requestMocks[method];
     if (!mocks) return false;
     return mocks.find((mock) => mock.persistent && !Boolean(mock.condition));
+  }
+
+  public findConditionalPersistentMock(method: string, condition: MockCondition) {
+    const mocks = this.provider.requestMocks[method];
+    if (!mocks) return false;
+    return mocks.find((mock) => mock.persistent && mock.condition === condition);
   }
 
   /**

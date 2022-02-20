@@ -7,13 +7,13 @@ The test files demonstrate how to use `eth-testing` with `@testing-library` in o
 ## Get started
 
 Install the dependencies
-```shell
+```console
 npm install
 ```
 
 ### Run the tests
 
-```shell
+```console
 npm test
 ```
 
@@ -25,18 +25,18 @@ There are three tests:
 ### Start the application
 
 1. Launch a development blockchain network using a ganache-cli with one account. If no `PRIVATE_KEY` is given, a random one will be generated.
-```shell
+```console
 PRIVATE_KEY=<MY_PRIVATE_KEY> npm run ganache:start
 ```
 The exposed port of the ganache-cli is `8545`.
 
 2. Deploy the `Storage.sol` contract on the development network
-```shell
+```console
 npm run truffle:deploy
 ```
 Copy the deployed address of the contract and paste it in `src/constants/storage-contract.ts` for the exported `ADDRESS` variable.
 
 3. Run the application
-```shell
+```console
 npm start
 ```
