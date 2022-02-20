@@ -120,6 +120,7 @@ export class TestingUtils{
       persistent: true,
       condition
     })
+    return this;
   }
 
   /**
