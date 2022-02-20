@@ -25,6 +25,7 @@ export class LowLevelTestingUtils {
    */
   public emit(eventName: string, payload: any) {
     this.mockManager.emit(eventName, payload);
+    return this;
   }
 
   /**
@@ -49,6 +50,7 @@ export class LowLevelTestingUtils {
     mockOptions: MockOptions = {}
   ) {
     this.mockManager.mockRequest(method, data, mockOptions);
+    return this;
   }
 }
 export class TestingUtils{
@@ -70,6 +72,7 @@ export class TestingUtils{
    */
   mockChainId(chainId: string | number) {
     this.mockManager.mockRequest("eth_chainId", chainId, { persistent: true });
+    return this;
   }
 
   /**
@@ -81,6 +84,7 @@ export class TestingUtils{
    */
   mockAccounts(accounts: string[]) {
     this.mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
+    return this;
   }
 
   /**
@@ -94,6 +98,7 @@ export class TestingUtils{
   mockChainChanged(newChainId: string) {
     this.mockManager.mockRequest("eth_chainId", newChainId, { persistent: true });
     this.mockManager.emit("chainChanged", newChainId);
+    return this;
   }
 
   /**
@@ -106,6 +111,7 @@ export class TestingUtils{
   mockAccountsChanged(newAccounts: string[]) {
     this.mockManager.mockRequest("eth_accounts", newAccounts, { persistent: true });
     this.mockManager.emit("accountsChanged", newAccounts);
+    return this;
   }
 
 

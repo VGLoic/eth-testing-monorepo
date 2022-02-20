@@ -55,6 +55,7 @@ export class ContractUtils {
       condition,
       ...mockOptions,
     });
+    return this;
   }
 
   public mockTransaction(
@@ -162,5 +163,6 @@ export class ContractUtils {
     this.mockManager.mockRequest("eth_getTransactionReceipt", txReceipt, {
       condition: getTxCondition,
     });
+    return this;
   }
 }
