@@ -1,4 +1,4 @@
-import { Provider } from "./provider";
+import { Provider } from "./providers";
 import { MockOptions, MockRequest } from "./types";
 
 export class MockManager {
@@ -8,6 +8,14 @@ export class MockManager {
     this.provider = provider;
   }
 
+  /**
+   * Emits an event
+   * @param eventName Name of the event 
+   * @param payload Payload of the event
+   * @example ```ts
+   * mockManager.emit("chainChanged", "0x1");
+   * ```
+   */
   public emit(eventName: string, payload: any) {
     const subscribers = this.provider.topics[eventName];
     if (!subscribers) return;
@@ -16,6 +24,18 @@ export class MockManager {
     });
   }
 
+  /**
+   * Mock a JSON-RPC request
+   * @param method JSON-RPC method name
+   * @param data Data to be resolved, or error to be thrown in case of throw
+   * @param mockOptions Options of the mock
+   * @example ```ts
+   * // Mock one "eth_accounts" request
+   * mockManager.mockRequest("eth_accounts", ["0x..."]);
+   * // Persistently mock "eth_chainId" request
+   * mockManager.mockRequest("eth_chainId", "0x1", { persistent: true });
+   * ```
+   */
   public mockRequest(
     method: string,
     data: unknown,
@@ -71,6 +91,9 @@ export class MockManager {
     return mocks.find((mock) => mock.persistent && !Boolean(mock.condition));
   }
 
+  /**
+   * Clear all mocks for the provider
+   */
   public clearAllMocks() {
     this.provider.requestMocks = {};
   }

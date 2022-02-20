@@ -26,7 +26,7 @@ yarn add eth-testing@alpha --dev
 The `example` folder contains a fully tested simple application. It allows a user to connect with MetaMask and interact with a smart contract. The test of the loading of the full app is shown as an example.
 ```TypeScript
 test("user is able to connect by clicking on the connect button, the wallet informations and smart contract values are shown", async () => {
-    const contractTestingUtils = generateContractUtils(ABI);
+    const contractTestingUtils = testingUtils.generateContractUtils(ABI);
 
     // Start with no accounts - the wallet is not connected
     testingUtils.mockAccounts([]);
@@ -80,8 +80,7 @@ The first step is to generate the utils
 ```TypeScript
 const {
     provider,
-    testingUtils,
-    generateContractUtils
+    testingUtils
 } = setupEthTesting({ providerType: "MetaMask" });
 ```
 The argument is only the provider type, the two choices for now are `"MetaMask"` or `"default"`.
@@ -131,10 +130,10 @@ testingUtils.mockAccountsChanged(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"])
 testingUtils.mockRequestAccounts(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
 ```
 
-Additionally, the `generateContractUtils` is exposed from the setup and allows to generate high level utils for contract interactions based on their ABI.
+Additionally, the `generateContractUtils` is exposed from the `testingUtils` object and allows to generate high level utils for contract interactions based on their ABI.
 ```TypeScript
 const abi = [...];
-const contractTestingUtils = generateContractUtils(abi);
+const contractTestingUtils = testingUtils.generateContractUtils(abi);
 ```
 
 Let us consider a very simple contract

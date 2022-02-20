@@ -2,8 +2,8 @@ import { Fragment, Interface, JsonFragment } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
-import { MockManager } from "./mock-manager";
-import { MockOptions } from "./types";
+import { MockManager } from "../mock-manager";
+import { MockOptions } from "../types";
 
 type CallOptions = {
   contractAddress?: string;
@@ -55,6 +55,7 @@ export class ContractUtils {
       condition,
       ...mockOptions,
     });
+    return this;
   }
 
   public mockTransaction(
@@ -162,5 +163,6 @@ export class ContractUtils {
     this.mockManager.mockRequest("eth_getTransactionReceipt", txReceipt, {
       condition: getTxCondition,
     });
+    return this;
   }
 }

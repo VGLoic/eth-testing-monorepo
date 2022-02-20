@@ -6,7 +6,7 @@ import { setupEthTesting } from "../../../src";
 
 describe("App", () => {
     let originalEthereum: any;
-    const { provider, testingUtils, generateContractUtils } = setupEthTesting({
+    const { provider, testingUtils } = setupEthTesting({
         providerType: "MetaMask",
     });
 
@@ -24,7 +24,7 @@ describe("App", () => {
     });
 
     test("user is able to connect by clicking on the connect button, the wallet informations and smart contract values are shown", async () => {
-        const contractTestingUtils = generateContractUtils(ABI);
+        const contractTestingUtils = testingUtils.generateContractUtils(ABI);
 
         // Start with no accounts - the wallet is not connected
         testingUtils.mockAccounts([]);

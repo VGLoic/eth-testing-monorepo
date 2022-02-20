@@ -7,7 +7,7 @@ import Web3JsContractBox from "../web3js-contract-box";
 
 describe("ContractBox", () => {
   let originalEthereum: any;
-  const { provider, testingUtils, generateContractUtils } = setupEthTesting({
+  const { provider, testingUtils } = setupEthTesting({
     providerType: "MetaMask",
   });
 
@@ -33,7 +33,7 @@ describe("ContractBox", () => {
 
   components.forEach((ContractBoxComponent) => {
     test(`with component ${ContractBoxComponent.name}, the value of the contract is displayed and up to date`, async () => {
-      const contractTestingUtils = generateContractUtils(ABI);
+      const contractTestingUtils = testingUtils.generateContractUtils(ABI);
 
       contractTestingUtils.mockCall("value", ["100"]);
 
