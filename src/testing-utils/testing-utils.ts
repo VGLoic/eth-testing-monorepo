@@ -1,7 +1,8 @@
 import { Fragment, JsonFragment } from "@ethersproject/abi";
+import { ethers } from "ethers";
 import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
-import { MockOptions } from "../types";
+import { MockCondition, MockOptions } from "../types";
 
 type MockRequestAccountsOptions = {
   chainId?: string;
@@ -53,13 +54,18 @@ export class LowLevelTestingUtils {
     return this;
   }
 }
+
+type BalanceConditionCache = Record<string, MockCondition>;
 export class TestingUtils{
   private mockManager: MockManager;
   public lowLevel: LowLevelTestingUtils;
 
+  private balanceConditionCache: BalanceConditionCache
+
   constructor(mockManager: MockManager) {
     this.mockManager = mockManager;
     this.lowLevel = new LowLevelTestingUtils(mockManager);
+    this.balanceConditionCache = {};
   }
 
   /**
@@ -85,6 +91,35 @@ export class TestingUtils{
   mockAccounts(accounts: string[]) {
     this.mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
     return this;
+  }
+
+  /**
+   * Persistently mock the balance JSON-RPC request for a specific address
+   * @param address Address for which the balance is queried
+   * @param balance Balance of the address in Wei
+   * @example ```ts
+   * // With ethers
+   * testingUtils.mockBalance("0x...", ethers.utils.parseUnits("1", "ether").toString())
+   * // With web3.js
+   * testingUtils.mockBalance("0x...", Web3.utils.toWei("1", "ether"))
+   * ```
+   */
+  mockBalance(address: string, balance: string | number) {
+    let condition: MockCondition;
+    const conditionFromCache = this.balanceConditionCache[address];
+    if (Boolean(conditionFromCache)) {
+      condition = conditionFromCache
+    } else {
+      condition = (params: unknown[]) => {
+        const [paramAddress] = params as [string, string];
+        return paramAddress.toLowerCase() === address.toLowerCase();
+      }
+      this.balanceConditionCache[address] = condition;
+    }
+    this.mockManager.mockRequest("eth_getBalance", ethers.BigNumber.from(balance), {
+      persistent: true,
+      condition
+    })
   }
 
   /**
