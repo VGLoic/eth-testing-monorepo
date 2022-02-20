@@ -108,7 +108,7 @@ Mock found:
     }
     console.log(`
 #### [eth-testing] - start log ####
-Request intercepted: { method: ${method}, params: ${params} }
+Request intercepted: { method: ${method}, params: ${params ? JSON.stringify(params) : "[]"} }
 ${mockDescription}
 #### [eth-testing] - end log ####
 `)
