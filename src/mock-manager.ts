@@ -1,3 +1,4 @@
+import { EventFilter } from "ethers";
 import { Provider } from "./providers";
 import { MockOptions, MockRequest, MockCondition } from "./types";
 
@@ -10,14 +11,14 @@ export class MockManager {
 
   /**
    * Emits an event
-   * @param eventName Name of the event 
+   * @param eventName Name of the event
    * @param payload Payload of the event
    * @example ```ts
    * mockManager.emit("chainChanged", "0x1");
    * ```
    */
-  public emit(eventName: string, payload: any) {
-    const subscribers = this.provider.topics[eventName];
+  public emit(eventName: string | EventFilter, payload: any) {
+    const subscribers = this.provider.topics.get(eventName);
     if (!subscribers) return;
     subscribers.forEach((subscriber) => {
       subscriber(payload);
@@ -52,17 +53,18 @@ export class MockManager {
     };
 
     if (isConditionalMock) {
-      const currentConditionalPersistentMock = this.findConditionalPersistentMock(method, condition as MockCondition);
+      const currentConditionalPersistentMock =
+        this.findConditionalPersistentMock(method, condition as MockCondition);
       if (currentConditionalPersistentMock) {
         if (!isPersistent) {
           console.warn(
-            `There is only a persistent registered mock for ${method} with this condition, this additional mocking will not be considered.`
+            `There is already a persistent registered mock for ${method} with this condition, this additional mocking will not be considered.`
           );
           return this;
         }
-        this.provider.requestMocks[method] = this.provider.requestMocks[method].filter(
-          (mock) => mock !== currentConditionalPersistentMock
-        );
+        this.provider.requestMocks[method] = this.provider.requestMocks[
+          method
+        ].filter((mock) => mock !== currentConditionalPersistentMock);
       }
       return this.registerMock(method, mockRequest);
     }
@@ -72,13 +74,13 @@ export class MockManager {
     if (currentUnconditionalPersistentMock) {
       if (!isPersistent) {
         console.warn(
-          `There is only a persistent registered mock for ${method}, this additional mocking will not be considered.`
+          `There is already a persistent registered mock for ${method}, this additional mocking will not be considered.`
         );
         return this;
       }
-      this.provider.requestMocks[method] = this.provider.requestMocks[method].filter(
-        (mock) => mock !== currentUnconditionalPersistentMock
-      );
+      this.provider.requestMocks[method] = this.provider.requestMocks[
+        method
+      ].filter((mock) => mock !== currentUnconditionalPersistentMock);
     }
 
     return this.registerMock(method, mockRequest);
@@ -103,10 +105,15 @@ export class MockManager {
     return mocks.find((mock) => mock.persistent && !Boolean(mock.condition));
   }
 
-  public findConditionalPersistentMock(method: string, condition: MockCondition) {
+  public findConditionalPersistentMock(
+    method: string,
+    condition: MockCondition
+  ) {
     const mocks = this.provider.requestMocks[method];
     if (!mocks) return false;
-    return mocks.find((mock) => mock.persistent && mock.condition === condition);
+    return mocks.find(
+      (mock) => mock.persistent && mock.condition === condition
+    );
   }
 
   /**

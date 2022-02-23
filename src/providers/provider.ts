@@ -1,16 +1,17 @@
+import { EventFilter } from "ethers";
 import { MockRequest } from "../types";
 
 type Subscriber = (args: unknown) => unknown;
-type Topics = Record<string, Subscriber[]>;
+type Topics = Map<string | EventFilter, Subscriber[]>;
 
 type ProviderConstructorArgs = {
   verbose?: boolean;
-}
+};
 
 export class Provider {
   public requestMocks: Record<string, MockRequest[]> = {};
 
-  public topics: Topics = {};
+  public topics: Topics = new Map();
 
   public verbose: boolean;
 
@@ -18,31 +19,41 @@ export class Provider {
     this.verbose = Boolean(verbose);
   }
 
-  public on(eventName: string, callback: Subscriber) {
-    if (this.topics[eventName]) {
-      this.topics[eventName].push(callback);
+  public on(eventName: string | EventFilter, callback: Subscriber) {
+    if (this.topics.has(eventName)) {
+      const subscribers = this.topics.get(eventName) as Subscriber[];
+      subscribers.push(callback);
+      this.topics.set(eventName, subscribers);
     } else {
-      this.topics[eventName] = [callback];
+      this.topics.set(eventName, [callback]);
     }
   }
 
-  public once(eventName: string, callback: Subscriber) {
+  public once(eventName: string | EventFilter, callback: Subscriber) {
     const topics = this.topics;
     const updatedCallback = (args: unknown) => {
-      topics[eventName] = topics[eventName].filter(cb => cb === callback);
-      return callback(args)
-    }
-    if (this.topics[eventName]) {
-      this.topics[eventName].push(updatedCallback);
+      const filteredTopics = (topics.get(eventName) || []).filter(
+        (cb) => cb === callback
+      );
+      topics.set(eventName, filteredTopics);
+      return callback(args);
+    };
+    if (this.topics.has(eventName)) {
+      const subscribers = this.topics.get(eventName) as Subscriber[];
+      subscribers.push(updatedCallback);
+      this.topics.set(eventName, subscribers);
     } else {
-      this.topics[eventName] = [updatedCallback];
+      this.topics.set(eventName, [updatedCallback]);
     }
   }
 
-  public removeListener(eventName: string, callback: Subscriber) {
-    const subscribers = this.topics[eventName];
+  public removeListener(eventName: string | EventFilter, callback: Subscriber) {
+    const subscribers = this.topics.get(eventName);
     if (!subscribers) return;
-    this.topics[eventName] = subscribers.filter((cb) => cb !== callback);
+    this.topics.set(
+      eventName,
+      subscribers.filter((cb) => cb !== callback)
+    );
   }
 
   public async request({
@@ -52,7 +63,10 @@ export class Provider {
     method: string;
     params: unknown[];
   }) {
-    const promise = new Promise<{ data: unknown; callback?: (data?: unknown, params?: unknown[]) => void }>((resolve, reject) => {
+    const promise = new Promise<{
+      data: unknown;
+      callback?: (data?: unknown, params?: unknown[]) => void;
+    }>((resolve, reject) => {
       const mock = this.findMock(method, params);
       if (this.verbose) {
         this.logRequest(method, params, mock);
@@ -93,7 +107,11 @@ export class Provider {
     return standardMock || null;
   }
 
-  private logRequest(method: string, params: unknown[], mock: MockRequest | null) {
+  private logRequest(
+    method: string,
+    params: unknown[],
+    mock: MockRequest | null
+  ) {
     let mockDescription: string;
     if (!mock) {
       mockDescription = "No mock has been found. 'undefined' will be resolved.";
@@ -104,13 +122,15 @@ Mock found:
 - Persistent: ${mock.persistent ? "yes" : "no"}
 - Conditional: ${mock.condition ? "yes" : "no"}
 - Should throw: ${mock.shouldThrow ? "yes" : "no"}
-`
+`;
     }
     console.log(`
 #### [eth-testing] - start log ####
-Request intercepted: { method: ${method}, params: ${params ? JSON.stringify(params) : "[]"} }
+Request intercepted: { method: ${method}, params: ${
+      params ? JSON.stringify(params) : "[]"
+    } }
 ${mockDescription}
 #### [eth-testing] - end log ####
-`)
+`);
   }
 }

@@ -26,19 +26,20 @@ describe("App", () => {
     test("user is able to connect by clicking on the connect button, the wallet informations and smart contract values are shown", async () => {
         const contractTestingUtils = testingUtils.generateContractUtils(ABI);
 
-        // Start with no accounts - the wallet is not connected
-        testingUtils.mockAccounts([]);
+        // Start with not connected wallet
+        testingUtils.mockNotConnectedWallet();
 
         // After the eth_requestAccounts has resolved
         // - the account will be "0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf",
         // - the chain will be "0x1",
+        // - the block number will be "0x1"
         // - the call to the `value` method of the smart contract will resolved with 100
         testingUtils.mockRequestAccounts(
             ["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"],
             {
-                chainId: "0x1",
                 triggerCallback: () => {
                     contractTestingUtils.mockCall("value", ["100"]);
+                    contractTestingUtils.mockGetLogs("ValueUpdated", []);
                 }
             }
         );

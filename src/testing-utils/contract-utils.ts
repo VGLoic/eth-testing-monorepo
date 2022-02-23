@@ -1,7 +1,9 @@
+import { ethers, EventFilter } from "ethers";
 import { Fragment, Interface, JsonFragment } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
+import { Log } from "@ethersproject/abstract-provider";
 import { MockManager } from "../mock-manager";
 import { MockOptions } from "../types";
 
@@ -21,7 +23,11 @@ export class ContractUtils {
   private contractInterface: Interface;
   private address?: string;
 
-  constructor(mockManager: MockManager, abi: readonly (string | JsonFragment | Fragment)[], address?: string) {
+  constructor(
+    mockManager: MockManager,
+    abi: readonly (string | JsonFragment | Fragment)[],
+    address?: string
+  ) {
     this.mockManager = mockManager;
     this.contractInterface = new Interface(abi);
     this.address = address;
@@ -67,7 +73,7 @@ export class ContractUtils {
       this.mockManager.findUnconditionalPersistentMock("eth_chainId");
     if (!chainIdMock) {
       throw new Error(
-        "Unable to properly mock transaction because chain ID has not been properly set up."
+        "Unable to properly mock transaction because chain ID mock has not been properly set up."
       );
     }
 
@@ -75,15 +81,20 @@ export class ContractUtils {
       this.mockManager.findUnconditionalPersistentMock("eth_accounts");
     if (!accountMock) {
       throw new Error(
-        "Unable to properly mock transaction because account has not been properly set up."
+        "Unable to properly mock transaction because account mock has not been properly set up."
       );
     }
 
     const { txValues, from, to } = txOptions;
 
-    const blockNumber =
-      "0x0000000000000000000000000000000000000000000000000000000000000001";
-    this.mockManager.mockRequest("eth_blockNumber", blockNumber);
+    const blockNumberMock =
+      this.mockManager.findUnconditionalPersistentMock("eth_blockNumber");
+    if (!blockNumberMock) {
+      throw new Error(
+        "Unable to properly mock transaction because block number mock has not been properly set up."
+      );
+    }
+    const blockNumber = blockNumberMock.data as string;
 
     const [mockedAccount] = accountMock.data as string[];
     const fromAddress = from || mockedAccount;
@@ -153,7 +164,7 @@ export class ContractUtils {
       blockHash,
       transactionHash: txHash,
       logs: [],
-      blockNumber: 1,
+      blockNumber: Number(blockNumber),
       confirmations: 1,
       cumulativeGasUsed: BigNumber.from(1),
       effectiveGasPrice: BigNumber.from(1),
@@ -164,5 +175,143 @@ export class ContractUtils {
       condition: getTxCondition,
     });
     return this;
+  }
+
+  /**
+   * Mock the next past logs request with an array of a single event type
+   * @param eventName Name of the event
+   * @param allValues Array of array of values of the events
+   * @example ```ts
+   * // Mock for two events `event ValueUpdated(uint value)` with values `0` and `12`
+   * contractTestingUtils.mockGetLogs("ValueUpdated", [["0"], ["12"]]);
+   * ```
+   */
+  public mockGetLogs(eventName: string, allValues: unknown[][]) {
+    const blockNumberMock =
+      this.mockManager.findUnconditionalPersistentMock("eth_blockNumber");
+    if (!blockNumberMock) {
+      throw new Error(
+        "Unable to properly mock transaction because block number mock has not been properly set up."
+      );
+    }
+    const blockNumber = blockNumberMock.data as string;
+    this.mockManager.mockRequest(
+      "eth_getLogs",
+      allValues.map((values) =>
+        this.generateMockLog(eventName, values, {
+          blockNumber: Number(blockNumber),
+        })
+      )
+    );
+    return this;
+  }
+
+  /**
+   * Mock an emission of a log, mocked block number is automatically increased
+   * @param eventName Name of the event
+   * @param values array of values of the event
+   * @param subscriptionId Needed if using web3.js
+   * @param logOverrides Optional overrides for the log
+   * @example ```ts
+   * // Mock emission of a log for `event ValueUpdated(uint value)` with value `12`
+   * ...
+   * // With ethers.js
+   * contractTestingUtils.mockEmitLog("ValueUpdated", ["12"]);
+   * // With web3.js
+   * testingUtils.mockSubscribe("0x123");
+   * ...
+   * contractTestingUtils.mockEmitLog("ValueUpdated", ["12"], "0x123");
+   * ```
+   */
+  public mockEmitLog(
+    eventName: string,
+    values: unknown[],
+    subscriptionId?: string,
+    logOverrides?: Partial<Log>
+  ) {
+    const blockNumberMock =
+      this.mockManager.findUnconditionalPersistentMock("eth_blockNumber");
+    if (!blockNumberMock) {
+      throw new Error(
+        "Unable to properly mock transaction because block number mock has not been properly set up."
+      );
+    }
+    const blockNumber = blockNumberMock.data as string;
+    const incrementedBlockNumber = Number(blockNumber) + 1;
+    const hexValue = ethers.utils.hexValue(incrementedBlockNumber);
+    const zeroPadIncrementedBlockNumber = ethers.utils.hexZeroPad(hexValue, 32);
+    this.mockManager.mockRequest(
+      "eth_blockNumber",
+      zeroPadIncrementedBlockNumber,
+      { persistent: true }
+    );
+
+    const log = this.generateMockLog(eventName, values, {
+      blockNumber: incrementedBlockNumber,
+      ...logOverrides,
+    });
+
+    if (subscriptionId) {
+      this.mockManager.emit("message", {
+        type: "eth_subscription",
+        data: {
+          subscription: subscriptionId,
+          result: log,
+        },
+      });
+    } else {
+      this.mockManager.mockRequest("eth_getLogs", [log]);
+      const address = this.address || logOverrides?.address;
+      const filters: EventFilter = {
+        address,
+        topics: this.contractInterface.encodeFilterTopics(
+          this.contractInterface.getEvent(eventName),
+          []
+        ),
+      };
+      this.mockManager.emit(filters, log);
+    }
+
+    return this;
+  }
+
+  /**
+   * Generate a log from an event name and the values of the event
+   * @param eventName Name of the event
+   * @param values Array of values of the event
+   * @param logOverrides Optional overrides for the log
+   * @example ```ts
+   * // Generate a log for `event ValueUpdated(uint value)` with value `12`
+   * const log = contractTestingUtils.generateMockLog("ValueUpdated", ["12"]);
+   * ```
+   * @returns The log for the event
+   */
+  public generateMockLog(
+    eventName: string,
+    values: unknown[],
+    logOverrides?: Partial<Log>
+  ): Log {
+    const defaultContractAddress = "0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf";
+    const address = this.address || defaultContractAddress;
+
+    const { data, topics } = this.contractInterface.encodeEventLog(
+      this.contractInterface.getEvent(eventName),
+      values
+    );
+
+    return {
+      blockNumber: 1,
+      blockHash:
+        "0xdafc0b053f0728212d1a7bf7f12b883107db7a2ef949a28c2483cabaf187255c",
+      transactionIndex: 0,
+      removed: false,
+      address,
+      data,
+      topics,
+      transactionHash:
+        "0xdafc0b053f0728212d1a7bf7f12b883107db7a2ef949a28c2483cabaf187255c",
+      logIndex: 0,
+      ...logOverrides,
+    };
   }
 }
