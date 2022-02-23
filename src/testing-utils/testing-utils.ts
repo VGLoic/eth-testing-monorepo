@@ -4,21 +4,16 @@ import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
 import { MockCondition, MockOptions } from "../types";
 
-type MockRequestAccountsOptions = {
-  chainId?: string;
-  triggerCallback?: () => void;
-}
-
 export class LowLevelTestingUtils {
   private mockManager: MockManager;
-  
+
   constructor(mockManager: MockManager) {
     this.mockManager = mockManager;
   }
 
   /**
    * Emits an event
-   * @param eventName Name of the event 
+   * @param eventName Name of the event
    * @param payload Payload of the event
    * @example ```ts
    * lowLevelTestingUtils.emit("chainChanged", "0x1");
@@ -55,17 +50,53 @@ export class LowLevelTestingUtils {
   }
 }
 
+type MockWalletOptions = {
+  chainId?: string | number;
+  blockNumber?: string | number;
+};
+
+type MockRequestAccountsOptions = {
+  chainId?: string | number;
+  blockNumber?: string | number;
+  triggerCallback?: () => void;
+};
+
 type BalanceConditionCache = Record<string, MockCondition>;
-export class TestingUtils{
+export class TestingUtils {
   private mockManager: MockManager;
   public lowLevel: LowLevelTestingUtils;
 
-  private balanceConditionCache: BalanceConditionCache
+  private balanceConditionCache: BalanceConditionCache;
 
   constructor(mockManager: MockManager) {
     this.mockManager = mockManager;
     this.lowLevel = new LowLevelTestingUtils(mockManager);
     this.balanceConditionCache = {};
+  }
+
+  /**
+   * Setup mock for a connected wallet: accounts, chain ID and block number are permanently mocked
+   * @param accounts The array of accounts
+   * @param options.chainId The chain ID, default to "0x1"
+   * @param options.blockNumber The block number, default to "0x1"
+   * @example ```ts
+   * testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
+   * ```
+   */
+  public mockConnectedWallet(
+    accounts: string[],
+    { chainId = "0x1", blockNumber = "0x1" } = {} as MockWalletOptions
+  ) {
+    this.mockAccounts(accounts);
+    this.mockChainId(chainId);
+    this.mockBlockNumber(blockNumber);
+  }
+
+  /**
+   * Setup mock for a not connected wallet: only the accounts are mocked to an empty array
+   */
+  public mockNotConnectedWallet() {
+    this.mockAccounts([]);
   }
 
   /**
@@ -76,8 +107,28 @@ export class TestingUtils{
    * testingUtils.mockChainId("0x1");
    * ```
    */
-  mockChainId(chainId: string | number) {
-    this.mockManager.mockRequest("eth_chainId", chainId, { persistent: true });
+  public mockChainId(chainId: string | number) {
+    const hexValue = ethers.utils.hexValue(chainId);
+    this.mockManager.mockRequest("eth_chainId", hexValue, { persistent: true });
+    return this;
+  }
+
+  /**
+   * Persistently mock the block number JSON-RPC request
+   * @param blockNumber The block number as a number or a hex string
+   * @example ```ts
+   * // Using number - mock block number will be return as 0x0000000000000000000000000000000000000000000000000000000000000001
+   * testingUtils.mockBlockNumber(1);
+   * // Using hex string - mocked block number will be return as 0x0000000000000000000000000000000000000000000000000000000000000001
+   * testingUtils.mockBlockNumber('0x1');
+   * ```
+   */
+  public mockBlockNumber(blockNumber: string | number) {
+    const hexValue = ethers.utils.hexValue(blockNumber);
+    const zeroPadBlockNumber = ethers.utils.hexZeroPad(hexValue, 32);
+    this.mockManager.mockRequest("eth_blockNumber", zeroPadBlockNumber, {
+      persistent: true,
+    });
     return this;
   }
 
@@ -88,8 +139,10 @@ export class TestingUtils{
    * testingUtils.mockAccounts(["0x..."]);
    * ```
    */
-  mockAccounts(accounts: string[]) {
-    this.mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
+  public mockAccounts(accounts: string[]) {
+    this.mockManager.mockRequest("eth_accounts", accounts, {
+      persistent: true,
+    });
     return this;
   }
 
@@ -104,22 +157,26 @@ export class TestingUtils{
    * testingUtils.mockBalance("0x...", Web3.utils.toWei("1", "ether"))
    * ```
    */
-  mockBalance(address: string, balance: string | number) {
+  public mockBalance(address: string, balance: string | number) {
     let condition: MockCondition;
     const conditionFromCache = this.balanceConditionCache[address];
     if (Boolean(conditionFromCache)) {
-      condition = conditionFromCache
+      condition = conditionFromCache;
     } else {
       condition = (params: unknown[]) => {
         const [paramAddress] = params as [string, string];
         return paramAddress.toLowerCase() === address.toLowerCase();
-      }
+      };
       this.balanceConditionCache[address] = condition;
     }
-    this.mockManager.mockRequest("eth_getBalance", ethers.BigNumber.from(balance), {
-      persistent: true,
-      condition
-    })
+    this.mockManager.mockRequest(
+      "eth_getBalance",
+      ethers.BigNumber.from(balance),
+      {
+        persistent: true,
+        condition,
+      }
+    );
     return this;
   }
 
@@ -131,8 +188,10 @@ export class TestingUtils{
    * testingUtils.mockChainChanged("0x3");
    * ```
    */
-  mockChainChanged(newChainId: string) {
-    this.mockManager.mockRequest("eth_chainId", newChainId, { persistent: true });
+  public mockChainChanged(newChainId: string) {
+    this.mockManager.mockRequest("eth_chainId", newChainId, {
+      persistent: true,
+    });
     this.mockManager.emit("chainChanged", newChainId);
     return this;
   }
@@ -144,12 +203,30 @@ export class TestingUtils{
    * testingUtils.mockAccountsChanged(["0x..."]);
    * ```
    */
-  mockAccountsChanged(newAccounts: string[]) {
-    this.mockManager.mockRequest("eth_accounts", newAccounts, { persistent: true });
+  public mockAccountsChanged(newAccounts: string[]) {
+    this.mockManager.mockRequest("eth_accounts", newAccounts, {
+      persistent: true,
+    });
     this.mockManager.emit("accountsChanged", newAccounts);
     return this;
   }
 
+  /**
+   * Mock the subscription with a given subscription ID
+   * @param subscriptionId The subscription ID as a hex string
+   * @example ```ts
+   * testingUtils.mockSubscribe("0x123");
+   * ...
+   * // Log emission using the subscription ID
+   * contractTestingUtils.mockEmitLog("ValueUpdated", ["14"], "0x123")
+   * ```
+   */
+  public mockSubscribe(subscriptionId: string) {
+    this.mockManager.mockRequest("eth_subscribe", subscriptionId, {
+      persistent: true,
+    });
+    return this;
+  }
 
   /**
    * Mock the next eth_requestAccounts request and persistently mock the accounts once the latter request has been triggered
@@ -161,13 +238,21 @@ export class TestingUtils{
    * testingUtils.mockRequestAccounts(["0x138071e4e810f34265bd833be9c5dd96f01bd8a5"], { chainId: "0x1" });
    * ```
    */
-  mockRequestAccounts(accounts: string[], options: MockRequestAccountsOptions = {}) {
+  public mockRequestAccounts(
+    accounts: string[],
+    {
+      chainId = "0x1",
+      blockNumber = "0x1",
+      triggerCallback,
+    }: MockRequestAccountsOptions = {}
+  ) {
     const completedTriggerCallback = () => {
-      this.mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
-      if (options.chainId) this.mockManager.mockRequest("eth_chainId", options.chainId, { persistent: true });
-      if (options.triggerCallback) options.triggerCallback();
-    }
-    this.mockManager.mockRequest("eth_requestAccounts", accounts, { triggerCallback: completedTriggerCallback });
+      this.mockConnectedWallet(accounts, { chainId, blockNumber });
+      if (triggerCallback) triggerCallback();
+    };
+    this.mockManager.mockRequest("eth_requestAccounts", accounts, {
+      triggerCallback: completedTriggerCallback,
+    });
   }
 
   /**
@@ -179,14 +264,14 @@ export class TestingUtils{
    * const erc20TestingUtils = testingUtils.generateContractUtils(ERC20_ABI);
    * ```
    */
-  generateContractUtils(abi: (string | JsonFragment | Fragment)[]) {
+  public generateContractUtils(abi: (string | JsonFragment | Fragment)[]) {
     return new ContractUtils(this.mockManager, abi);
   }
 
   /**
    * Clear all mocks
    */
-  clearAllMocks() {
+  public clearAllMocks() {
     this.mockManager.clearAllMocks();
   }
 }

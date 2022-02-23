@@ -6,6 +6,8 @@ import { ABI, ADDRESS } from "constants/storage-contract";
 function useStorageContract() {
   const [value, setValue] = React.useState<null | number>(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [previousValues, setPreviousValues] = React.useState<number[]>([]);
 
   React.useEffect(() => {
     const fetchInitialValue = async () => {
@@ -14,15 +16,56 @@ function useStorageContract() {
       );
       const contract = new ethers.Contract(ADDRESS, ABI, provider);
       const val = await contract.value();
-      setValue(Number(val));
-      setIsLoading(false);
+      return Number(val);
     };
-    fetchInitialValue();
+    const fetchPreviousValues = async () => {
+      const provider = new ethers.providers.Web3Provider(
+        (window as any).ethereum
+      );
+      const contract = new ethers.Contract(ADDRESS, ABI, provider);
+      const events = await contract.queryFilter(
+        contract.filters.ValueUpdated(),
+      )
+      return events
+        .map(e => Number(e.args?.value.toString()))
+        .reduce((acc, value) => {
+          if (acc.length > 0 && acc[acc.length - 1] === value) return acc;
+          return [...acc, value];
+        }, [] as number[]);
+    };
+    Promise.all([fetchInitialValue(), fetchPreviousValues()]).then(([initialValue, previousValues]) => {
+      setPreviousValues(previousValues);
+      setValue(initialValue);
+      setIsLoading(false)
+    });
   }, []);
+
+  React.useEffect(() => {
+    if (isLoading) return () => {};
+
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    // provider.pollingInterval = 1000
+    const contract = new ethers.Contract(ADDRESS, ABI, provider);
+    
+    const onValueUpdated = (value: ethers.BigNumber) => {
+      setPreviousValues(current => {
+        const newValue = Number(value);
+        if (current[current.length - 1] === newValue) return current;
+        return [...current, newValue];
+      })
+    }
+
+    contract.on("ValueUpdated", onValueUpdated)
+    return () => {
+      contract.off("ValueUpdated", onValueUpdated)
+    }
+  }, [isLoading])
 
   const handleSubmit = async (e: React.FormEvent<Element>) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
       const newValue = (e.target as any).elements["value"].value as string;
       if (!newValue) {
@@ -39,22 +82,26 @@ function useStorageContract() {
     } catch (err) {
       console.log("Oh no it failed :(. ", err);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return {
     value,
+    previousValues,
+    isSubmitting,
     isLoading,
     handleSubmit,
   };
 }
 
 function EthersContractBox() {
-  const { value, isLoading, handleSubmit } = useStorageContract();
+  const { value, previousValues, isLoading, isSubmitting, handleSubmit } = useStorageContract();
   return (
     <ContractBox
+      previousValues={previousValues}
       value={value}
+      isSubmitting={isSubmitting}
       isLoading={isLoading}
       handleSubmit={handleSubmit}
     />

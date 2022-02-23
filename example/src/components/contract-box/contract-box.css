@@ -1,7 +1,14 @@
 .contract-box {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contract-box-form-container {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
+  margin: 48px;
 }
 
 .contract-box-form {
