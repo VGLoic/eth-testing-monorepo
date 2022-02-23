@@ -195,13 +195,21 @@ export class ContractUtils {
       );
     }
     const blockNumber = blockNumberMock.data as string;
+    const eventTopic = this.contractInterface.getEventTopic(
+      this.contractInterface.getEvent(eventName)
+    );
+    const condition = (params: unknown[]) => {
+      const filter = params[0] as EventFilter;
+      return filter?.topics?.[0] === eventTopic;
+    };
     this.mockManager.mockRequest(
       "eth_getLogs",
       allValues.map((values) =>
         this.generateMockLog(eventName, values, {
           blockNumber: Number(blockNumber),
         })
-      )
+      ),
+      { condition }
     );
     return this;
   }
@@ -260,7 +268,14 @@ export class ContractUtils {
         },
       });
     } else {
-      this.mockManager.mockRequest("eth_getLogs", [log]);
+      const eventTopic = this.contractInterface.getEventTopic(
+        this.contractInterface.getEvent(eventName)
+      );
+      const condition = (params: unknown[]) => {
+        const filter = params[0] as EventFilter;
+        return filter?.topics?.[0] === eventTopic;
+      };
+      this.mockManager.mockRequest("eth_getLogs", [log], { condition });
       const address = this.address || logOverrides?.address;
       const filters: EventFilter = {
         address,
