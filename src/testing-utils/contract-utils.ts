@@ -5,7 +5,7 @@ import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
 import { Log } from "@ethersproject/abstract-provider";
 import { MockManager } from "../mock-manager";
-import { MockOptions } from "../types";
+import { MockCondition, MockOptions } from "../types";
 
 type CallOptions = {
   contractAddress?: string;
@@ -18,10 +18,13 @@ type TxOptions = {
   txValues?: readonly any[];
 };
 
+type ConditionCache = Record<string, MockCondition>;
+
 export class ContractUtils {
   private mockManager: MockManager;
   private contractInterface: Interface;
   private address?: string;
+  private conditionCache: ConditionCache;
 
   constructor(
     mockManager: MockManager,
@@ -31,6 +34,7 @@ export class ContractUtils {
     this.mockManager = mockManager;
     this.contractInterface = new Interface(abi);
     this.address = address;
+    this.conditionCache = {};
   }
 
   public mockCall(
@@ -41,18 +45,30 @@ export class ContractUtils {
   ) {
     const { contractAddress, callValues } = callOptions;
     const toAddress = contractAddress || this.address;
-    const condition = (params: unknown[]) => {
-      const ethCallParams = params as [{ to: string; data: string }, string];
-      const { to, data } = ethCallParams[0];
-      const isTargetedContract = toAddress
-        ? toAddress.toLowerCase() === to.toLowerCase()
-        : true;
-      const isTargetedFunction = callValues
-        ? data ===
-          this.contractInterface.encodeFunctionData(functionName, callValues)
-        : data.startsWith(this.contractInterface.getSighash(functionName));
-      return isTargetedContract && isTargetedFunction;
-    };
+    const conditionKey = JSON.stringify({
+      functionName,
+      to: toAddress,
+      callValues,
+    });
+    let condition: MockCondition;
+    const conditionFromCache = this.conditionCache[conditionKey];
+    if (Boolean(conditionFromCache)) {
+      condition = conditionFromCache;
+    } else {
+      condition = (params: unknown[]) => {
+        const ethCallParams = params as [{ to: string; data: string }, string];
+        const { to, data } = ethCallParams[0];
+        const isTargetedContract = toAddress
+          ? toAddress.toLowerCase() === to.toLowerCase()
+          : true;
+        const isTargetedFunction = callValues
+          ? data ===
+            this.contractInterface.encodeFunctionData(functionName, callValues)
+          : data.startsWith(this.contractInterface.getSighash(functionName));
+        return isTargetedContract && isTargetedFunction;
+      };
+      this.conditionCache[conditionKey] = condition;
+    }
     const callResult = this.contractInterface.encodeFunctionResult(
       functionName,
       values
@@ -100,24 +116,38 @@ export class ContractUtils {
     const fromAddress = from || mockedAccount;
 
     const toAddress = to || this.address;
-    const condition = (params: readonly unknown[]) => {
-      const estimateGasOrSendTransactionParams = params as [
-        { from: string; to: string; data: string }
-      ];
-      const { from, to, data } = estimateGasOrSendTransactionParams[0];
-      const isTargetedFunction = txValues
-        ? data ===
-          this.contractInterface.encodeFunctionData(functionName, txValues)
-        : data.startsWith(this.contractInterface.getSighash(functionName));
-      const isTargetedContract = toAddress
-        ? toAddress.toLowerCase() === to.toLowerCase()
-        : true;
-      return (
-        from.toLowerCase() === fromAddress.toLowerCase() &&
-        isTargetedContract &&
-        isTargetedFunction
-      );
-    };
+
+    const conditionKey = JSON.stringify({
+      functionName,
+      to: toAddress,
+      from: fromAddress,
+      txValues,
+    });
+    let condition: MockCondition;
+    const conditionFromCache = this.conditionCache[conditionKey];
+    if (Boolean(conditionFromCache)) {
+      condition = conditionFromCache;
+    } else {
+      condition = (params: readonly unknown[]) => {
+        const estimateGasOrSendTransactionParams = params as [
+          { from: string; to: string; data: string }
+        ];
+        const { from, to, data } = estimateGasOrSendTransactionParams[0];
+        const isTargetedFunction = txValues
+          ? data ===
+            this.contractInterface.encodeFunctionData(functionName, txValues)
+          : data.startsWith(this.contractInterface.getSighash(functionName));
+        const isTargetedContract = toAddress
+          ? toAddress.toLowerCase() === to.toLowerCase()
+          : true;
+        return (
+          from.toLowerCase() === fromAddress.toLowerCase() &&
+          isTargetedContract &&
+          isTargetedFunction
+        );
+      };
+      this.conditionCache[conditionKey] = condition;
+    }
     const gasEstimation =
       "0x0000000000000000000000000000000000000000000000000000000000010000";
     this.mockManager.mockRequest("eth_estimateGas", gasEstimation, {
