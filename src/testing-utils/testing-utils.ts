@@ -90,6 +90,7 @@ export class TestingUtils {
     this.mockAccounts(accounts);
     this.mockChainId(chainId);
     this.mockBlockNumber(blockNumber);
+    return this;
   }
 
   /**
@@ -97,6 +98,7 @@ export class TestingUtils {
    */
   public mockNotConnectedWallet() {
     this.mockAccounts([]);
+    return this;
   }
 
   /**
@@ -253,6 +255,7 @@ export class TestingUtils {
     this.mockManager.mockRequest("eth_requestAccounts", accounts, {
       triggerCallback: completedTriggerCallback,
     });
+    return this;
   }
 
   /**
@@ -273,5 +276,6 @@ export class TestingUtils {
    */
   public clearAllMocks() {
     this.mockManager.clearAllMocks();
+    return this;
   }
 }
