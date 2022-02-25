@@ -7,13 +7,13 @@ import Web3JsContractBox from "../web3js-contract-box";
 
 describe("ContractBox", () => {
   let originalEthereum: any;
-  const { provider, testingUtils } = setupEthTesting({
+  const testingUtils = setupEthTesting({
     providerType: "MetaMask"
   });
 
   beforeAll(() => {
     originalEthereum = (global.window as any).ethereum;
-    (global.window as any).ethereum = provider;
+    (global.window as any).ethereum = testingUtils.getProvider();
   });
 
   afterAll(() => {
