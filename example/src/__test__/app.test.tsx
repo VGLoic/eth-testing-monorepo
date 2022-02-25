@@ -6,13 +6,13 @@ import { setupEthTesting } from "../../../src";
 
 describe("App", () => {
     let originalEthereum: any;
-    const { provider, testingUtils } = setupEthTesting({
+    const testingUtils = setupEthTesting({
         providerType: "MetaMask",
     });
 
     beforeAll(() => {
         originalEthereum = (global.window as any).ethereum;
-        (global.window as any).ethereum = provider;
+        (global.window as any).ethereum = testingUtils.getProvider();
     });
 
     afterAll(() => {

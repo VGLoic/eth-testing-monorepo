@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
 import { MockCondition, MockOptions } from "../types";
+import { Provider } from "../providers";
 
 export class LowLevelTestingUtils {
   private mockManager: MockManager;
@@ -64,14 +65,25 @@ type MockRequestAccountsOptions = {
 type BalanceConditionCache = Record<string, MockCondition>;
 export class TestingUtils {
   private mockManager: MockManager;
+  private provider: Provider;
   public lowLevel: LowLevelTestingUtils;
 
   private balanceConditionCache: BalanceConditionCache;
 
-  constructor(mockManager: MockManager) {
+  constructor(provider: Provider) {
+    const mockManager = new MockManager(provider);
+    this.provider = provider;
     this.mockManager = mockManager;
     this.lowLevel = new LowLevelTestingUtils(mockManager);
     this.balanceConditionCache = {};
+  }
+
+  /**
+   * Get the mock provider
+   * @returns The mock provider
+   */
+  public getProvider(): Provider {
+    return this.provider;
   }
 
   /**
