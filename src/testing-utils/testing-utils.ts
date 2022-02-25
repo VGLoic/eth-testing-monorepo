@@ -106,6 +106,23 @@ export class TestingUtils {
   }
 
   /**
+   * Setup mock for a readonly provider: chain ID and block number are permanently mocked
+   * @param options.chainId The chain ID, default to "0x1"
+   * @param options.blockNumber The block number, default to "0x1"
+   * @example ```ts
+   * testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
+   * ```
+   */
+  public mockReadonlyProvider(
+    { chainId = "0x1", blockNumber = "0x1" } = {} as MockWalletOptions
+  ) {
+    this.mockAccounts([]);
+    this.mockChainId(chainId);
+    this.mockBlockNumber(blockNumber);
+    return this;
+  }
+
+  /**
    * Setup mock for a not connected wallet: only the accounts are mocked to an empty array
    */
   public mockNotConnectedWallet() {
