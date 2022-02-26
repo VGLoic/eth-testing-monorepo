@@ -256,3 +256,7 @@ It is sometimes handy to display which JSON-RPC requests are triggered and for e
 ```ts
 const testingUtils = setupEthTesting({ verbose: true });
 ```
+
+## Contributing :rocket:
+
+Contributions are welcome! Please follow the guidelines in the [contributing document](/CONTRIBUTING.md).
