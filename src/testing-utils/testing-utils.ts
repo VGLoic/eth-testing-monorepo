@@ -290,14 +290,18 @@ export class TestingUtils {
   /**
    * Generate contract specific testing utils
    * @param abi ABI of the contract
+   * @param contractAddress Address of the contract
    * @returns The testing utils for this specific contract
    * @example ```ts
    * const ERC20_ABI = [...];
    * const erc20TestingUtils = testingUtils.generateContractUtils(ERC20_ABI);
    * ```
    */
-  public generateContractUtils(abi: (string | JsonFragment | Fragment)[]) {
-    return new ContractUtils(this.mockManager, abi);
+  public generateContractUtils(
+    abi: (string | JsonFragment | Fragment)[],
+    contractAddress?: string
+  ) {
+    return new ContractUtils(this.mockManager, abi, contractAddress);
   }
 
   /**

@@ -253,7 +253,7 @@ export class ContractUtils {
    * @example ```ts
    * // Mock emission of a log for `event ValueUpdated(uint value)` with value `12`
    * ...
-   * // With ethers.js
+   * // With ethers
    * contractTestingUtils.mockEmitLog("ValueUpdated", ["12"]);
    * // With web3.js
    * testingUtils.mockSubscribe("0x123");
