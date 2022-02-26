@@ -49,7 +49,7 @@ describe("App", () => {
         const connectButton = screen.getByRole("button", { name: /connect/i });
         userEvent.click(connectButton);
 
-        await waitForElementToBeRemoved(() => screen.getByRole("button", { name: /connect/i }));
+        await waitForElementToBeRemoved(connectButton);
 
         const accountElement = screen.getByText(/account/i);
         const chainIdElement = screen.getByText(/chain id/i);
