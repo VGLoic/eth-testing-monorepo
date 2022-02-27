@@ -4,6 +4,7 @@ import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
 import { MockCondition, MockOptions } from "../types";
 import { Provider } from "../providers";
+import { EnsUtils } from "./ens-utils";
 
 export class LowLevelTestingUtils {
   private mockManager: MockManager;
@@ -67,6 +68,7 @@ export class TestingUtils {
   private mockManager: MockManager;
   private provider: Provider;
   public lowLevel: LowLevelTestingUtils;
+  public ens: EnsUtils;
 
   private balanceConditionCache: BalanceConditionCache;
 
@@ -75,6 +77,7 @@ export class TestingUtils {
     this.provider = provider;
     this.mockManager = mockManager;
     this.lowLevel = new LowLevelTestingUtils(mockManager);
+    this.ens = new EnsUtils(mockManager);
     this.balanceConditionCache = {};
   }
 
