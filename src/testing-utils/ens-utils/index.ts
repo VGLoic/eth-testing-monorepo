@@ -71,6 +71,26 @@ export class EnsUtils {
   }
 
   /**
+   * Mock empty reverse resolution of a batch of addresses
+   * @param addresses Array of address
+   * @example ```ts
+   * ens.mockEmptyReverse(["0x123...", "0x456..."]);
+   * ```
+   */
+  public mockEmptyReverse(addresses: string[]) {
+    addresses.forEach((address) => {
+      const reverseName = address.substring(2).toLowerCase() + ".addr.reverse";
+      this.mockResolver(reverseName, ethers.constants.AddressZero);
+      const callValues = {
+        callValues: [ethers.utils.namehash(reverseName)],
+      };
+      this.publicResolverUtils.mockCall("name", [""], callValues, {
+        persistent: true,
+      });
+    });
+  }
+
+  /**
    * Mock the resolution of a name to an address
    * @param name ENS name
    * @param address Address
