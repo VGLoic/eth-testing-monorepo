@@ -2,7 +2,7 @@ import { MetaMaskProvider, WalletConnectProvider, Provider } from "./providers";
 import { TestingUtils } from "./testing-utils";
 
 type SetupOptions = {
-  providerType: "MetaMask" | "WalletConnect" | "default";
+  providerType?: "MetaMask" | "WalletConnect" | "default";
   verbose?: boolean;
 };
 
