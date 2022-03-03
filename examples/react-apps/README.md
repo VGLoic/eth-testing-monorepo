@@ -1,46 +1,37 @@
-# Getting Started with Create React App
+# Eth Testing Example Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is an example of a React decentralized application. The app connects to Ethereum using MetaMask and allows the user to interact with a simple contract.
 
-## Available Scripts
+The test files demonstrate how to use `eth-testing` with `@testing-library` in order to properly test components and logic interacting with the Ethereum provider.
 
-In the project directory, you can run:
+## Get started
 
-### `npm start`
+Install the dependencies
+```console
+npm install
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Run the tests
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```console
+npm test
+```
 
-### `npm test`
+### Start the application
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Launch a development blockchain network using a ganache-cli with one account. If no `PRIVATE_KEY` is given, a random one will be generated.
+```console
+PRIVATE_KEY=<MY_PRIVATE_KEY> npm run ganache:start
+```
+The exposed port of the ganache-cli is `8545`.
 
-### `npm run build`
+2. Deploy the `Storage.sol` contract on the development network
+```console
+npm run truffle:deploy
+```
+Copy the deployed address of the contract and paste it in `src/constants/storage-contract.ts` for the exported `ADDRESS` variable.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Run the application
+```console
+npm start
+```
