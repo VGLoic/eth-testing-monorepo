@@ -37,6 +37,22 @@ export class ContractUtils {
     this.conditionCache = {};
   }
 
+  /**
+   * Mock a call of the contract
+   * @param functionName Name of the function
+   * @param values Array of values to be returned - array is used as ordering of the returned data
+   * @param callOptions.callValues Optional array of values passed to the call - useful when dealing with multiple similar calls with different arguments
+   * @param callOptions.contractAddress Optional address of the contract, fallbacks to the contract address of the utils if specified
+   * @param mockOptions.persistent If true, the mock will persist
+   * @param mockOptions.shouldThrow If true, the mocked request will throw, the thrown error is the data field
+   * @param mockOptions.timeout Timeout of the request, in milliseconds
+   * @param mockOptions.condition Specific condition function for the mock, a conditional mock has priority over standard mocks. Signature is `(params: unknown[]) => boolean`
+   * @param mockOptions.triggerCallback Callback that is triggered when the mock has been consumed. Signature is `(data?: unknown, params?: unknown[]) => void`
+   * @example ```ts
+   * // Mock next call to `value` function with return value `12`
+   * contractUtils.mockCall("value", ["12"]);
+   * ```
+   */
   public mockCall(
     functionName: string,
     values: readonly any[] | undefined,
@@ -80,6 +96,22 @@ export class ContractUtils {
     return this;
   }
 
+  /**
+   * Mock a transaction of the contract
+   * @param functionName Name of the function
+   * @param txOptions.from Optional address of the sender, fallbacks to the current mocked account
+   * @param txOptions.to Optional address of the recipient, fallbacks to the contract address of the utils if specified
+   * @param txOptions.txValues Optional array of values passed to the transaction - useful when dealing with multiple similar calls with different arguments
+   * @param mockOptions.persistent If true, the mock will persist
+   * @param mockOptions.shouldThrow If true, the mocked request will throw, the thrown error is the data field
+   * @param mockOptions.timeout Timeout of the request, in milliseconds
+   * @param mockOptions.condition Specific condition function for the mock, a conditional mock has priority over standard mocks. Signature is `(params: unknown[]) => boolean`
+   * @param mockOptions.triggerCallback Callback that is triggered when the mock has been consumed. Signature is `(data?: unknown, params?: unknown[]) => void`
+   * @example ```ts
+   * // Mock next transaction using `setValue` method
+   * contractUtils.mockTransaction("setValue");
+   * ```
+   */
   public mockTransaction(
     functionName: string,
     txOptions: TxOptions = {},

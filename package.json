@@ -27,9 +27,12 @@
     "lint": "eslint src",
     "test": "jest",
     "test:cover": "jest --coverage",
-    "install:example": "cd example && npm install",
-    "test:example": "cd example && npm run test",
-    "format": "prettier src example/src --write"
+    "install:examples": "cd examples/react-apps && npm install",
+    "test:examples": "cd examples/react-apps && npm run test",
+    "format": "prettier src examples/react-apps/src --write"
+  },
+  "dependencies": {
+    "ethers": "^5.5.4"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
@@ -66,8 +69,5 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "dependencies": {
-    "ethers": "^5.5.4"
   }
 }
