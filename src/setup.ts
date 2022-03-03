@@ -1,26 +1,26 @@
 import { MetaMaskProvider, WalletConnectProvider, Provider } from "./providers";
 import { TestingUtils } from "./testing-utils";
 
-type SetupOptions = {
+type GenerateOptions = {
   providerType?: "MetaMask" | "WalletConnect" | "default";
   verbose?: boolean;
 };
 
-const defaultSetupOptions: SetupOptions = {
+const defaultGenerationOptions: GenerateOptions = {
   providerType: "default",
   verbose: false,
 };
 
 /**
- * Set up the testing utils associated with a mock provider
+ * Generate the testing utils associated with a mock provider
  * @param options.providerType Type of the provider to mock, default to `default`
  * @param options.verbose If true, the JSON-RPC request will be logged
  * @returns The testing utils for one provider
  */
-export function setupEthTesting({
+export function generateTestingUtils({
   providerType,
   verbose,
-}: SetupOptions = defaultSetupOptions) {
+}: GenerateOptions = defaultGenerationOptions) {
   const provider =
     providerType === "MetaMask"
       ? new MetaMaskProvider({ verbose })

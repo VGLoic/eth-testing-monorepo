@@ -1,8 +1,8 @@
-import { setupEthTesting } from "../setup";
+import { generateTestingUtils } from "../setup";
 
 describe("internal events handling", () => {
   test("subscriber callbacks should be triggered when associated event is received", () => {
-    const testingUtils = setupEthTesting();
+    const testingUtils = generateTestingUtils();
     const provider = testingUtils.getProvider();
 
     const firstCallback = jest.fn();

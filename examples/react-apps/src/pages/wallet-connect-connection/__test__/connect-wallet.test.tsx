@@ -5,12 +5,12 @@ import {
     waitForElementToBeRemoved,
   } from "@testing-library/react";
   import userEvent from "@testing-library/user-event";
-  import { setupEthTesting } from "eth-testing";
+  import { generateTestingUtils } from "eth-testing";
   import WalletConnection from "..";
   import * as walletConnectProvider from '../provider';
   
   describe("Connect wallet", () => {
-    const testingUtils = setupEthTesting({
+    const testingUtils = generateTestingUtils({
       providerType: "WalletConnect",
     });
   

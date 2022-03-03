@@ -1,10 +1,10 @@
 import { render, screen, } from "@testing-library/react";
-import { setupEthTesting } from "eth-testing";
+import { generateTestingUtils } from "eth-testing";
 import { DumbResolver } from "..";
 
 describe("ContractBox", () => {
   let originalEthereum: any;
-  const testingUtils = setupEthTesting({
+  const testingUtils = generateTestingUtils({
     providerType: "MetaMask",
   });
 
