@@ -1,8 +1,11 @@
+export type MockCondition = (params: unknown[]) => boolean;
+
 export type MockOptions = {
   persistent?: boolean;
   shouldThrow?: boolean;
   timeout?: number;
-  condition?: (params: unknown[]) => boolean;
+  condition?: MockCondition;
+  triggerCallback?: (data?: unknown, params?: unknown[]) => void;
 };
 
 export type MockRequest = {

@@ -1,0 +1,54 @@
+{
+  "name": "react-apps",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "rescripts start",
+    "build": "rescripts build",
+    "test": "rescripts test",
+    "truffle:console": "truffle console --network development",
+    "truffle:compile": "truffle compile",
+    "truffle:deploy": "truffle deploy --network development --reset",
+    "ganache:start": "ganache-cli --chain.chainId=\"31337\" -p 8545 --account=${PRIVATE_KEY},0x3635c9adc5dea00000"
+  },
+  "dependencies": {
+    "@tanstack/react-location": "^3.6.1",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.3",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^16.11.26",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.13",
+    "@walletconnect/web3-provider": "^1.7.3",
+    "ethers": "^5.5.4",
+    "install": "^0.13.0",
+    "npm": "^8.5.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "^4",
+    "typescript": "^4.6.2",
+    "web-vitals": "^2.1.4",
+    "web3": "^1.7.1"
+  },
+  "devDependencies": {
+    "@rescripts/cli": "^0.0.16",
+    "@rescripts/rescript-use-babel-config": "^0.0.12",
+    "@rescripts/rescript-use-eslint-config": "^0.0.11",
+    "eth-testing": "file:../..",
+    "ganache-cli": "^6.12.2",
+    "truffle": "^5.5.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

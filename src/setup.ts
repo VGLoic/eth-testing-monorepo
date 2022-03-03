@@ -1,62 +1,34 @@
-import { JsonFragment } from "@ethersproject/abi";
-import { MetaMaskProvider } from "./metamask";
-import { Provider } from "./provider";
-import { MockManager } from "./mock-manager";
-import { ContractUtils } from "./contract-utils";
+import { MetaMaskProvider, WalletConnectProvider, Provider } from "./providers";
+import { TestingUtils } from "./testing-utils";
 
-type SetupOptions = {
-  providerType: "MetaMask" | "default";
+type GenerateOptions = {
+  providerType?: "MetaMask" | "WalletConnect" | "default";
+  verbose?: boolean;
 };
 
-const defaultSetupOptions: SetupOptions = {
+const defaultGenerationOptions: GenerateOptions = {
   providerType: "default",
+  verbose: false,
 };
 
-export function setupEthTesting(options: SetupOptions = defaultSetupOptions) {
+/**
+ * Generate the testing utils associated with a mock provider
+ * @param options.providerType Type of the provider to mock, default to `default`
+ * @param options.verbose If true, the JSON-RPC request will be logged
+ * @returns The testing utils for one provider
+ */
+export function generateTestingUtils({
+  providerType,
+  verbose,
+}: GenerateOptions = defaultGenerationOptions) {
   const provider =
-    options.providerType === "MetaMask"
-      ? new MetaMaskProvider()
-      : new Provider();
+    providerType === "MetaMask"
+      ? new MetaMaskProvider({ verbose })
+      : providerType === "WalletConnect"
+      ? new WalletConnectProvider({ verbose })
+      : new Provider({ verbose });
 
-  const mockManager = new MockManager(provider);
+  const testingUtils = new TestingUtils(provider);
 
-  const mockChainId = (chainId: string) => {
-    mockManager.mockRequest("eth_chainId", chainId, { persistent: true });
-  };
-  const mockAccounts = (accounts: string[]) => {
-    mockManager.mockRequest("eth_accounts", accounts, { persistent: true });
-  };
-
-  const mockChainChanged = (newChainId: string) => {
-    mockManager.mockRequest("eth_chainId", newChainId, { persistent: true });
-    mockManager.emit("chainChanged", newChainId);
-  };
-
-  const mockAccountsChanged = (newAccounts: string[]) => {
-    mockManager.mockRequest("eth_accounts", newAccounts, { persistent: true });
-    mockManager.emit("accountsChanged", newAccounts);
-  };
-
-  const generateContractUtils = (abi: JsonFragment[]) =>
-    new ContractUtils(mockManager, abi);
-
-  return {
-    provider,
-    testingUtils: {
-      mockChainId,
-      mockAccounts,
-      mockChainChanged,
-      mockAccountsChanged,
-      clearAllMocks: mockManager.clearAllMocks.bind(
-        mockManager
-      ) as MockManager["clearAllMocks"],
-      lowLevel: {
-        emit: mockManager.emit.bind(mockManager) as MockManager["emit"],
-        mockRequest: mockManager.mockRequest.bind(
-          mockManager
-        ) as MockManager["mockRequest"],
-      },
-    },
-    generateContractUtils,
-  };
+  return testingUtils;
 }
