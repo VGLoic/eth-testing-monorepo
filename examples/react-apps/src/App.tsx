@@ -12,6 +12,7 @@ import {
   EthersContractBox,
   Web3JsContractBox,
 } from "pages/contract-interactions/contract-box";
+import EnsStuff from "pages/ens";
 
 const routes: Route[] = [
   {
@@ -27,6 +28,7 @@ const routes: Route[] = [
       { path: "ethers", element: <EthersContractBox /> },
     ],
   },
+  { path: "ens", element: <EnsStuff /> },
 ];
 
 const location = new ReactLocation();
@@ -37,7 +39,8 @@ function App() {
       <div>
         <Link to="/">Home</Link>{" "}
         <Link to="metamask-connection">MetaMask Connection</Link>{" "}
-        <Link to="contract-interactions">Contract interaction</Link>
+        <Link to="contract-interactions">Contract interaction</Link>{" "}
+        <Link to="ens">ENS</Link>
       </div>
       <hr />
       <Outlet />
