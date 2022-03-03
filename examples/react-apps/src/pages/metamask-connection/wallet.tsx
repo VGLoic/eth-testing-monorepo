@@ -20,7 +20,7 @@ type State =
 const initialState: State = {
   account: null,
   chainId: null,
-  balance: null
+  balance: null,
 };
 
 type Action =
@@ -60,19 +60,19 @@ function reducer(state: State, action: Action): State {
         return {
           chainId: state.chainId as string,
           account: action.payload.newAccounts[0],
-          balance: action.payload.newBalances[0]  
-        }
+          balance: action.payload.newBalances[0],
+        };
       }
       return {
         chainId: null,
         account: null,
-        balance: null
+        balance: null,
       };
     case "chainChanged":
       return {
         ...state,
         chainId: action.payload.newChainId,
-        balance: action.payload.newBalance
+        balance: action.payload.newBalance,
       };
     default:
       return state;
@@ -84,17 +84,24 @@ function useWallet() {
 
   React.useEffect(() => {
     async function synchronizeWallet() {
-      const ethereum = (window as any).ethereum;
-      const [account] = await ethereum.request({ method: "eth_accounts" }) as [string];
-      const chainId = await ethereum.request({ method: "eth_chainId" }) as string;
-      const balance = await ethereum.request({ method: "eth_getBalance", params: [account, "latest"] }) as string;
+      const ethereum = window.ethereum;
+      const [account] = (await ethereum.request({
+        method: "eth_accounts",
+      })) as [string];
+      const chainId = (await ethereum.request({
+        method: "eth_chainId",
+      })) as string;
+      const balance = (await ethereum.request({
+        method: "eth_getBalance",
+        params: [account, "latest"],
+      })) as string;
       dispatch({ type: "initialized", payload: { account, chainId, balance } });
     }
     synchronizeWallet();
   }, []);
 
   React.useEffect(() => {
-    const ethereum = (window as any).ethereum;
+    const ethereum = window.ethereum;
     const onAccountChanged = async (newAccounts: string[]) => {
       if (!newAccounts[0]) {
         dispatch({
@@ -102,31 +109,37 @@ function useWallet() {
           payload: { newAccounts, newBalances: [] },
         });
       }
-      const balance = await ethereum.request({ method: "eth_getBalance", params: [newAccounts[0], "latest"] }) as string;
+      const balance = (await ethereum.request({
+        method: "eth_getBalance",
+        params: [newAccounts[0], "latest"],
+      })) as string;
       dispatch({
         type: "accountChanged",
         payload: { newAccounts, newBalances: [balance] },
       });
-    }
+    };
     ethereum.on("accountsChanged", onAccountChanged);
     return () => ethereum.removeListener("accountsChanged", onAccountChanged);
   }, []);
 
   React.useEffect(() => {
-    const ethereum = (window as any).ethereum;
+    const ethereum = window.ethereum;
     const onChainChanged = async (newChainId: string) => {
       if (!state.account) {
         dispatch({
           type: "chainChanged",
-          payload: { newChainId, newBalance: '0x' },
+          payload: { newChainId, newBalance: "0x" },
         });
       }
-      const balance = await ethereum.request({ method: "eth_getBalance", params: [state.account, "latest"] }) as string;
+      const balance = (await ethereum.request({
+        method: "eth_getBalance",
+        params: [state.account, "latest"],
+      })) as string;
       dispatch({
         type: "chainChanged",
         payload: { newChainId, newBalance: balance },
       });
-    }
+    };
     ethereum.on("chainChanged", onChainChanged);
     return () => ethereum.removeListener("chainChanged", onChainChanged);
   }, [state.account]);
@@ -134,4 +147,16 @@ function useWallet() {
   return state;
 }
 
-export default useWallet;
+function Wallet() {
+  const { account, chainId, balance } = useWallet();
+
+  return (
+    <div>
+      <div>Account: {account}</div>
+      <div>Chain ID: {chainId}</div>
+      <div>Balance: {(Number(balance) / 10 ** 18).toFixed(2)}</div>
+    </div>
+  );
+}
+
+export default Wallet;

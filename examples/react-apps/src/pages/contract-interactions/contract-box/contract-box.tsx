@@ -8,7 +8,12 @@ type ContractBoxProps = {
   isSubmitting: boolean;
   handleSubmit: (e: React.FormEvent<Element>) => Promise<void>;
 };
-function ContractBox({ value, previousValues, isSubmitting, handleSubmit }: ContractBoxProps) {
+function ContractBox({
+  value,
+  previousValues,
+  isSubmitting,
+  handleSubmit,
+}: ContractBoxProps) {
   return (
     <div className="contract-box">
       <div className="contract-box-form-container">
@@ -26,7 +31,9 @@ function ContractBox({ value, previousValues, isSubmitting, handleSubmit }: Cont
       <div>
         <div>Previous values:</div>
         <ul>
-          {previousValues.map((v, index) => <li key={index}>Previous value: {v}</li>)}
+          {previousValues.map((v, index) => (
+            <li key={index}>Previous value: {v}</li>
+          ))}
         </ul>
       </div>
     </div>

@@ -55,11 +55,13 @@ export class LowLevelTestingUtils {
 type MockWalletOptions = {
   chainId?: string | number;
   blockNumber?: string | number;
+  balance?: string | number;
 };
 
 type MockRequestAccountsOptions = {
   chainId?: string | number;
   blockNumber?: string | number;
+  balance?: string | number;
   triggerCallback?: () => void;
 };
 
@@ -94,17 +96,26 @@ export class TestingUtils {
    * @param accounts The array of accounts
    * @param options.chainId The chain ID, default to "0x1"
    * @param options.blockNumber The block number, default to "0x1"
+   * @param options.balance The balance of the first account, default to 0
    * @example ```ts
    * testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
    * ```
    */
   public mockConnectedWallet(
     accounts: string[],
-    { chainId = "0x1", blockNumber = "0x1" } = {} as MockWalletOptions
+    {
+      chainId = "0x1",
+      blockNumber = "0x1",
+      balance = 0,
+    } = {} as MockWalletOptions
   ) {
     this.mockAccounts(accounts);
     this.mockChainId(chainId);
     this.mockBlockNumber(blockNumber);
+    if (accounts[0]) {
+      this.mockBalance(accounts[0], balance);
+    }
+    this.mockRequestAccounts(accounts, { chainId, blockNumber, balance });
     return this;
   }
 
@@ -265,7 +276,9 @@ export class TestingUtils {
   /**
    * Mock the next eth_requestAccounts request and persistently mock the accounts once the latter request has been triggered
    * @param accounts Resolved accounts
-   * @param options.chainId If present, the chain ID will also be mocked with this value once the request has been triggered
+   * @param options.chainId The mocked value of the chain ID once the request has been triggered, default to "0x1"
+   * @param options.blockNumber The mocked value of the block number once the request has been triggered, default to "0x1"
+   * @param options.balance The mocked value of the balance of the first account once the request has been triggered, default to 0
    * @param options.triggerCallback Optional additional callback to be triggered with the request. The existing callback will at least mock the eth_accounts
    * @example ```ts
    * // The next eth_requestAccounts request will return the array of address and be set on MainNet
@@ -277,11 +290,12 @@ export class TestingUtils {
     {
       chainId = "0x1",
       blockNumber = "0x1",
+      balance = 0,
       triggerCallback,
     }: MockRequestAccountsOptions = {}
   ) {
     const completedTriggerCallback = () => {
-      this.mockConnectedWallet(accounts, { chainId, blockNumber });
+      this.mockConnectedWallet(accounts, { chainId, blockNumber, balance });
       if (triggerCallback) triggerCallback();
     };
     this.mockManager.mockRequest("eth_requestAccounts", accounts, {

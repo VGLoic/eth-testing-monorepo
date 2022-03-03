@@ -17,7 +17,7 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
-//  require('dotenv').config({ path: '.env.local' })
+//  require('dotenv').config({ path: '.env' })
 //  const HDWalletProvider = require('@truffle/hdwallet-provider');
  // const infuraKey = "fj4jll3k.....";
  //

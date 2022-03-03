@@ -11,48 +11,49 @@ function useStorageContract() {
 
   React.useEffect(() => {
     const fetchInitialValue = async () => {
-      const web3 = new Web3((window as any).ethereum);
+      const web3 = new Web3(window.ethereum);
       const contract = new web3.eth.Contract(ABI as any, ADDRESS);
       const val = await contract.methods.value().call();
       return Number(val);
     };
     const fetchPreviousValues = async () => {
-      const web3 = new Web3((window as any).ethereum);
+      const web3 = new Web3(window.ethereum);
       const contract = new web3.eth.Contract(ABI as any, ADDRESS);
       const events = await contract.getPastEvents("ValueUpdated", {
-        fromBlock: 0
+        fromBlock: 0,
       });
       return events
-        .map(e => Number(e.returnValues.value))
+        .map((e) => Number(e.returnValues.value))
         .reduce((acc, value) => {
           if (acc.length > 0 && acc[acc.length - 1] === value) return acc;
           return [...acc, value];
         }, [] as number[]);
     };
-    Promise.all([fetchInitialValue(), fetchPreviousValues()]).then(([initialValue, previousValues]) => {
-      setValue(initialValue);
-      setPreviousValues(previousValues);
-      setIsLoading(false)
-    });
+    Promise.all([fetchInitialValue(), fetchPreviousValues()]).then(
+      ([initialValue, previousValues]) => {
+        setValue(initialValue);
+        setPreviousValues(previousValues);
+        setIsLoading(false);
+      }
+    );
   }, []);
 
-
   React.useEffect(() => {
-    if (isLoading) return () => {}
-    const web3 = new Web3((window as any).ethereum);
+    if (isLoading) return () => {};
+    const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(ABI as any, ADDRESS);
-    
+
     const onValueUpdated = (_: unknown, event: any) => {
       if (!event) return;
-      setPreviousValues(current => {
+      setPreviousValues((current) => {
         const newValue = Number(event.returnValues.value);
         if (current[current.length - 1] === newValue) return current;
         return [...current, newValue];
-      })
-    }
+      });
+    };
 
     contract.events.ValueUpdated(undefined, onValueUpdated);
-  }, [isLoading])
+  }, [isLoading]);
 
   const handleSubmit = async (e: React.FormEvent<Element>) => {
     e.preventDefault();
@@ -62,7 +63,7 @@ function useStorageContract() {
       if (!newValue) {
         return;
       }
-      const web3 = new Web3((window as any).ethereum);
+      const web3 = new Web3(window.ethereum);
       const contract = new web3.eth.Contract(ABI as any, ADDRESS);
       const [from] = await web3.eth.getAccounts();
       await contract.methods.setValue(newValue).send({ from });
@@ -84,7 +85,8 @@ function useStorageContract() {
 }
 
 function Web3JsContractBox() {
-  const { value, previousValues, isLoading, isSubmitting, handleSubmit } = useStorageContract();
+  const { value, previousValues, isLoading, isSubmitting, handleSubmit } =
+    useStorageContract();
   return (
     <ContractBox
       value={value}

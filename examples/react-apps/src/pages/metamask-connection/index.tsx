@@ -1,11 +1,11 @@
 import * as React from "react";
-import Homepage from "pages/homepage";
+import Wallet from "./wallet";
 
-function App() {
+function MetaMaskConnection() {
   const [connected, setConnected] = React.useState(false);
 
   const connect = async () => {
-    const ethereum = (window as any).ethereum;
+    const ethereum = window.ethereum;
     if (!ethereum || !ethereum.isMetaMask) return;
     await ethereum.request({
       method: "eth_requestAccounts",
@@ -17,7 +17,7 @@ function App() {
     return <button onClick={connect}>Connect</button>;
   }
 
-  return <Homepage />;
+  return <Wallet />;
 }
 
-export default App;
+export default MetaMaskConnection;
