@@ -13,6 +13,7 @@ import {
   Web3JsContractBox,
 } from "pages/contract-interactions/contract-box";
 import EnsStuff from "pages/ens";
+import WalletConnectConnection from "pages/wallet-connect-connection";
 
 const routes: Route[] = [
   {
@@ -20,6 +21,7 @@ const routes: Route[] = [
     element: <div>Use the links for navigating through the examples</div>,
   },
   { path: "metamask-connection", element: <MetaMaskConnection /> },
+  { path: "wallet-connect-connection", element: <WalletConnectConnection /> },
   {
     path: "contract-interactions",
     element: <ContractInteractions />,
@@ -39,6 +41,7 @@ function App() {
       <div>
         <Link to="/">Home</Link>{" "}
         <Link to="metamask-connection">MetaMask Connection</Link>{" "}
+        <Link to="wallet-connect-connection">Wallet Connect Connection</Link>{" "}
         <Link to="contract-interactions">Contract interaction</Link>{" "}
         <Link to="ens">ENS</Link>
       </div>

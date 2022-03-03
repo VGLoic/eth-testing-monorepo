@@ -153,6 +153,8 @@ export class TestingUtils {
    * ```
    */
   public mockChainId(chainId: string | number) {
+    // TODO: There is a need to disinguish between provider type here
+    // Wallet connect returns number while MetaMask returns hex string
     const hexValue = ethers.utils.hexValue(chainId);
     this.mockManager.mockRequest("eth_chainId", hexValue, { persistent: true });
     return this;
