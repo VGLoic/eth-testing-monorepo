@@ -14,11 +14,11 @@ The recommended way to use Eth-Testing with an application is to install it a de
 
 Using `npm`
 ```console
-npm install eth-testing@alpha --save-dev
+npm install eth-testing --save-dev
 ```
 Or using `yarn`
 ```console
-yarn add eth-testing@alpha --dev
+yarn add eth-testing --dev
 ```
 
 As a very simple example, let us consider a React app using [metamask-react](https://github.com/VGLoic/metamask-react) for handling MetaMask and tested using [React Testing Library](https://testing-library.com/docs/react-testing-library/intro).
@@ -33,13 +33,13 @@ function App() {
 }
 
 // app.test.tsx
-import { setupEthTesting } from "eth-testing";
+import { generateTestingUtils } from "eth-testing";
 import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "App";
 ...
 describe("app connection", () => {
-    const testingUtils = setupEthTesting({ providerType: "MetaMask" });
+    const testingUtils = generateTestingUtils({ providerType: "MetaMask" });
     beforeAll(() => {
         // Manually inject the mocked provider in the window as MetaMask does
         global.window.ethereum = testingUtils.getProvider();
@@ -86,7 +86,7 @@ For a more serious application with more complete features and tests, one can ta
 
 The first step is to generate the utils
 ```ts
-const testingUtils = setupEthTesting({ providerType: "MetaMask" });
+const testingUtils = generateTestingUtils({ providerType: "MetaMask" });
 ```
 The argument is only the provider type, the three choices for now are `"MetaMask"`, `"WalletConnect"` or `"default"`.
 
@@ -255,7 +255,7 @@ type MockOptions = {
 
 It is sometimes handy to display which JSON-RPC requests are triggered and for each, show the associated mock if it exists. For that, the setup function allows to set the utils in *verbose* mode
 ```ts
-const testingUtils = setupEthTesting({ verbose: true });
+const testingUtils = generateTestingUtils({ verbose: true });
 ```
 
 ## Contributing :rocket:
