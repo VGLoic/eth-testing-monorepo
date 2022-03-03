@@ -33,6 +33,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci
+      - run: npm build
       - run: npm run install:examples
       - run: npm run test:examples
   test:
