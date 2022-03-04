@@ -78,7 +78,7 @@ describe("app connection", () => {
 
 As a next step, an example of a simple React application with contract interactions is available in the `example/` folder. It uses `jest` and `@testing-library` for the tests. 
 
-## Real World Application
+## Almost Real World Application
 
 For a more serious application with more complete features and tests, one can take a look at the [Rainbow Token application](https://github.com/VGLoic/rainbow-token-frontend).
 
