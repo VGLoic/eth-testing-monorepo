@@ -76,7 +76,7 @@ describe("app connection", () => {
 
 ## Examples
 
-As a next step, an example of a simple React application with contract interactions is available in the `example/` folder. It uses `jest` and `@testing-library` for the tests. 
+As a next step, multiple examples of a simple React components with contract interactions are available in the `examples/react-apps` folder. It uses `jest` and `@testing-library` for the tests. 
 
 ## Almost Real World Application
 
