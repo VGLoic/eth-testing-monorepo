@@ -98,13 +98,14 @@ export class Provider {
   private findMock(method: string, params: unknown[]) {
     const mocks = this.requestMocks[method];
     if (!mocks) return null;
-    const conditionalMock = mocks.find((mock) => {
+    const conditionalMocks = mocks.filter((mock) => {
       if (!mock.condition) return false;
       return mock.condition(params);
     });
-    if (conditionalMock) return conditionalMock;
-    const standardMock = mocks.find((mock) => !Boolean(mock.condition));
-    return standardMock || null;
+    if (conditionalMocks.length > 0) return conditionalMocks[0];
+    const standardMocks = mocks.filter((mock) => !Boolean(mock.condition));
+    if (standardMocks.length > 0) return standardMocks[0];
+    return null;
   }
 
   private logRequest(
