@@ -18,11 +18,6 @@ export class MockManager {
    */
   public emit(eventName: string, payload: any) {
     this.provider.emit(eventName, payload);
-    // const subscribers = this.provider.topics.get(eventName);
-    // if (!subscribers) return;
-    // subscribers.forEach((subscriber) => {
-    //   subscriber(payload);
-    // });
   }
 
   /**
