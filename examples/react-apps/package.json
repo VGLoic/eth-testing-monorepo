@@ -5,11 +5,11 @@
   "scripts": {
     "start": "rescripts start",
     "build": "rescripts build",
-    "test": "rescripts test",
+    "test": "SKIP_PREFLIGHT_CHECK=true rescripts test",
     "truffle:console": "truffle console --network development",
     "truffle:compile": "truffle compile",
     "truffle:deploy": "truffle deploy --network development --reset",
-    "ganache:start": "ganache-cli --chain.chainId=\"31337\" -p 8545 --account=${PRIVATE_KEY},0x3635c9adc5dea00000"
+    "ganache:start": "ganache --chain.chainId=\"31337\" -p 8545 --account=${PRIVATE_KEY},0x3635c9adc5dea00000"
   },
   "dependencies": {
     "@tanstack/react-location": "^3.6.1",
@@ -36,7 +36,7 @@
     "@rescripts/rescript-use-babel-config": "^0.0.12",
     "@rescripts/rescript-use-eslint-config": "^0.0.11",
     "eth-testing": "file:../..",
-    "ganache-cli": "^6.12.2",
+    "ganache": "^7.1.0",
     "truffle": "^5.5.2"
   },
   "browserslist": {

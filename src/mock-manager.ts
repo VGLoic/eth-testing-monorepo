@@ -1,4 +1,3 @@
-import { EventFilter } from "ethers";
 import { Provider } from "./providers";
 import { MockOptions, MockRequest, MockCondition } from "./types";
 
@@ -17,12 +16,13 @@ export class MockManager {
    * mockManager.emit("chainChanged", "0x1");
    * ```
    */
-  public emit(eventName: string | EventFilter, payload: any) {
-    const subscribers = this.provider.topics.get(eventName);
-    if (!subscribers) return;
-    subscribers.forEach((subscriber) => {
-      subscriber(payload);
-    });
+  public emit(eventName: string, payload: any) {
+    this.provider.emit(eventName, payload);
+    // const subscribers = this.provider.topics.get(eventName);
+    // if (!subscribers) return;
+    // subscribers.forEach((subscriber) => {
+    //   subscriber(payload);
+    // });
   }
 
   /**

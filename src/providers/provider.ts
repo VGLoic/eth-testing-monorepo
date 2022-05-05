@@ -1,4 +1,5 @@
 import { EventFilter } from "ethers";
+import { EventEmitter } from "node:events";
 import { MockRequest } from "../types";
 
 type Subscriber = (args: unknown) => unknown;
@@ -8,7 +9,7 @@ type ProviderConstructorArgs = {
   verbose?: boolean;
 };
 
-export class Provider {
+export class Provider extends EventEmitter {
   public requestMocks: Record<string, MockRequest[]> = {};
 
   public topics: Topics = new Map();
@@ -16,44 +17,8 @@ export class Provider {
   public verbose: boolean;
 
   constructor({ verbose }: ProviderConstructorArgs) {
+    super();
     this.verbose = Boolean(verbose);
-  }
-
-  public on(eventName: string | EventFilter, callback: Subscriber) {
-    if (this.topics.has(eventName)) {
-      const subscribers = this.topics.get(eventName) as Subscriber[];
-      subscribers.push(callback);
-      this.topics.set(eventName, subscribers);
-    } else {
-      this.topics.set(eventName, [callback]);
-    }
-  }
-
-  public once(eventName: string | EventFilter, callback: Subscriber) {
-    const topics = this.topics;
-    const updatedCallback = (args: unknown) => {
-      const filteredTopics = (topics.get(eventName) || []).filter(
-        (cb) => cb === callback
-      );
-      topics.set(eventName, filteredTopics);
-      return callback(args);
-    };
-    if (this.topics.has(eventName)) {
-      const subscribers = this.topics.get(eventName) as Subscriber[];
-      subscribers.push(updatedCallback);
-      this.topics.set(eventName, subscribers);
-    } else {
-      this.topics.set(eventName, [updatedCallback]);
-    }
-  }
-
-  public removeListener(eventName: string | EventFilter, callback: Subscriber) {
-    const subscribers = this.topics.get(eventName);
-    if (!subscribers) return;
-    this.topics.set(
-      eventName,
-      subscribers.filter((cb) => cb !== callback)
-    );
   }
 
   public async request({
