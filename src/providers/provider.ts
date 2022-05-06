@@ -1,9 +1,5 @@
-import { EventFilter } from "ethers";
 import { EventEmitter } from "node:events";
 import { MockRequest } from "../types";
-
-type Subscriber = (args: unknown) => unknown;
-type Topics = Map<string | EventFilter, Subscriber[]>;
 
 type ProviderConstructorArgs = {
   verbose?: boolean;
@@ -11,8 +7,6 @@ type ProviderConstructorArgs = {
 
 export class Provider extends EventEmitter {
   public requestMocks: Record<string, MockRequest[]> = {};
-
-  public topics: Topics = new Map();
 
   public verbose: boolean;
 
