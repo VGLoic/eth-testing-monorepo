@@ -17,10 +17,10 @@ export class Provider extends EventEmitter {
 
   public async request({
     method,
-    params,
+    params = [] as unknown[],
   }: {
     method: string;
-    params: unknown[];
+    params?: unknown[];
   }) {
     const promise = new Promise<{
       data: unknown;
