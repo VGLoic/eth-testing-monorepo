@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "rescripts start",
-    "build": "rescripts build",
+    "start": "SKIP_PREFLIGHT_CHECK=true rescripts start",
+    "build": "SKIP_PREFLIGHT_CHECK=true rescripts build",
     "test": "SKIP_PREFLIGHT_CHECK=true rescripts test",
-    "truffle:console": "truffle console --network development",
-    "truffle:compile": "truffle compile",
-    "truffle:deploy": "truffle deploy --network development --reset",
-    "ganache:start": "ganache --chain.chainId=\"31337\" -p 8545 --account=${PRIVATE_KEY},0x3635c9adc5dea00000"
+    "hardhat:compile": "hardhat compile",
+    "hardhat:deploy": "hardhat run scripts/deploy.js",
+    "hardhat:node": "hardhat node"
   },
   "dependencies": {
     "@tanstack/react-location": "^3.6.1",
@@ -26,18 +25,25 @@
     "npm": "^8.5.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "^4",
+    "react-scripts": "^4.0.3",
     "typescript": "^4.6.2",
     "web-vitals": "^2.1.4",
     "web3": "^1.7.1"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@rescripts/cli": "^0.0.16",
     "@rescripts/rescript-use-babel-config": "^0.0.12",
     "@rescripts/rescript-use-eslint-config": "^0.0.11",
+    "@rescripts/rescript-use-tslint-config": "^0.0.7",
+    "chai": "^4.3.6",
+    "dotenv": "^16.0.1",
     "eth-testing": "file:../..",
-    "ganache": "^7.1.0",
-    "truffle": "^5.5.2"
+    "ethereum-waffle": "^3.4.4",
+    "hardhat": "^2.9.4",
+    "ramda": "^0.28.0",
+    "ts-node": "^10.7.0"
   },
   "browserslist": {
     "production": [

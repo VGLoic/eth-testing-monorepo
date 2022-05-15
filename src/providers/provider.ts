@@ -1,4 +1,5 @@
-import { EventEmitter } from "node:events";
+// import { EventEmitter } from "node:events";
+import EventEmitter from "events";
 import { MockRequest } from "../types";
 
 type ProviderConstructorArgs = {
