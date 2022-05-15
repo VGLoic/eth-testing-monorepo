@@ -41,7 +41,7 @@ jobs:
     needs: [setup]
     strategy:
       matrix:
-        node: [ '14', '16' ]
+        node: [ '16' ]
     name: Node ${{ matrix.node }} - Test
     steps:
       - uses: actions/checkout@v2
