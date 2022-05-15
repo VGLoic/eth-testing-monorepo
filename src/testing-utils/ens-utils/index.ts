@@ -59,6 +59,9 @@ export class EnsUtils {
    */
   public mockAllToEmpty() {
     this.mockResolver();
+    this.publicResolverUtils.mockCall("supportsInterface", [false], undefined, {
+      persistent: true,
+    });
     this.publicResolverUtils.mockCall("name", [""], undefined, {
       persistent: true,
     });
@@ -78,6 +81,9 @@ export class EnsUtils {
    * ```
    */
   public mockEmptyReverse(addresses: string[]) {
+    this.publicResolverUtils.mockCall("supportsInterface", [false], undefined, {
+      persistent: true,
+    });
     addresses.forEach((address) => {
       const reverseName = address.substring(2).toLowerCase() + ".addr.reverse";
       this.mockResolver(reverseName, ethers.constants.AddressZero);
@@ -103,6 +109,9 @@ export class EnsUtils {
     const callValues = {
       callValues: [ethers.utils.namehash(name)],
     };
+    this.publicResolverUtils.mockCall("supportsInterface", [false], undefined, {
+      persistent: true,
+    });
     this.publicResolverUtils.mockCall("addr(bytes32)", [address], callValues, {
       persistent: true,
     });
@@ -120,6 +129,9 @@ export class EnsUtils {
     const reverseName = address.substring(2).toLowerCase() + ".addr.reverse";
 
     this.mockResolver(reverseName);
+    this.publicResolverUtils.mockCall("supportsInterface", [false], undefined, {
+      persistent: true,
+    });
     const callValues = {
       callValues: [ethers.utils.namehash(reverseName)],
     };
