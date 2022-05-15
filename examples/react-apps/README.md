@@ -19,15 +19,15 @@ npm test
 
 ### Start the application
 
-1. Launch a development blockchain network using a ganache-cli with one account. If no `PRIVATE_KEY` is given, a random one will be generated.
+1. Launch a development blockchain network using a hardhat node with one account. If no `PRIVATE_KEY` is given, a random one will be generated.
 ```console
-PRIVATE_KEY=<MY_PRIVATE_KEY> npm run ganache:start
+PRIVATE_KEY=<MY_PRIVATE_KEY> npm run hardhat:node
 ```
-The exposed port of the ganache-cli is `8545`.
+The exposed port of the hardhat node is `8545`.
 
 2. Deploy the `Storage.sol` contract on the development network
 ```console
-npm run truffle:deploy
+npm run hardhat:deploy
 ```
 Copy the deployed address of the contract and paste it in `src/constants/storage-contract.ts` for the exported `ADDRESS` variable.
 

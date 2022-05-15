@@ -346,7 +346,7 @@ export class ContractUtils {
           []
         ),
       };
-      this.mockManager.emit(filters, log);
+      this.mockManager.emit(JSON.stringify(filters), log);
     }
 
     return this;

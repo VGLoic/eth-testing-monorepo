@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "module": "esnext",
     "target": "es5",
     "lib": [
       "dom",
@@ -13,7 +14,6 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -23,5 +23,8 @@
   },
   "include": [
     "src"
+  ],
+  "files": [
+    "./hardhat.config.ts"
   ]
 }

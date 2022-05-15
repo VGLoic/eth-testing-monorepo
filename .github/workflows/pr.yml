@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '14', '16' ]
+        node: [ '16' ]
     name: Node ${{ matrix.node }} - Setup
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
     needs: [setup]
     strategy:
       matrix:
-        node: [ '14', '16' ]
+        node: [ '16' ]
     name: Node ${{ matrix.node }} - Example Test
     steps:
       - uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
     needs: [setup]
     strategy:
       matrix:
-        node: [ '14', '16' ]
+        node: [ '16' ]
     name: Node ${{ matrix.node }} - Test
     steps:
       - uses: actions/checkout@v2
