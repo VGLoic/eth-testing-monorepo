@@ -2,14 +2,16 @@ import {
   act,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { generateTestingUtils } from "eth-testing";
+import { ethers } from "ethers";
 import WalletConnection from "..";
 import * as walletConnectProvider from "../provider";
 
-describe("Connect wallet", () => {
+describe("Connect wallet [Wallet Connect]", () => {
   const testingUtils = generateTestingUtils({
     providerType: "WalletConnect",
   });
@@ -106,5 +108,37 @@ describe("Connect wallet", () => {
     // Wait for sync
     await screen.findByText(/chain id: 0x3/i);
     expect(screen.getByText(/balance: 5.00/i)).toBeInTheDocument();
+  });
+
+  test("User should be able to sign a transaction", async () => {
+    const bobsWallet = ethers.Wallet.createRandom();
+    // Start with a connected bobsWallet
+    testingUtils.mockConnectedWallet([bobsWallet.address]);
+    // mock out a function to call when we request personal sign
+    let signedMessages: string[] = [];
+    testingUtils.lowLevel.mockRequest("personal_sign", async (params: any) => {
+      let statement = (params as string[])[0];
+      const signedMessage = await bobsWallet.signMessage(statement);
+      signedMessages.push(signedMessage);
+      return signedMessage;
+    });
+    // render the wallet
+    render(<WalletConnection />);
+    // connect the wallet
+    const connectButton = screen.getByRole("button", { name: /connect/i });
+    userEvent.click(connectButton);
+    await screen.findByText(`account: ${bobsWallet.address}`, { exact: false });
+    // get the div for the signature result
+    const signatureResult = screen.getByTestId("signatureResult");
+    expect(signatureResult).toHaveTextContent("");
+    // sign the transaction
+    const signButton = screen.getByRole("button", { name: /sign/i });
+    userEvent.click(signButton);
+    // wait for the result to appear
+    await waitFor(() => {
+      expect(signatureResult).not.toHaveTextContent("");
+    });
+    // expect it to be the same as the signed message
+    expect(signatureResult).toHaveTextContent(signedMessages[0]);
   });
 });
