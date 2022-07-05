@@ -4,31 +4,25 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [ '16' ]
-    name: Node ${{ matrix.node }} - Setup
+    name: Setup
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '16.x'
           cache: npm
       - run: npm ci
   example-tests:
     runs-on: ubuntu-latest
     needs: [setup]
-    strategy:
-      matrix:
-        node: [ '16' ]
-    name: Node ${{ matrix.node }} - Example Test
+    name: Example Test
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '16.x'
           cache: npm
       - run: npm ci
       - run: npm run build
@@ -37,16 +31,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: [setup]
-    strategy:
-      matrix:
-        node: [ '16' ]
-    name: Node ${{ matrix.node }} - Test
+    name: Test
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '16.x'
           cache: npm
       - run: npm ci
       - run: npm run build
