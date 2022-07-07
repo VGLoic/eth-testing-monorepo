@@ -23,18 +23,24 @@ export class MockManager {
   /**
    * Mock a JSON-RPC request
    * @param method JSON-RPC method name
-   * @param data Data to be resolved, or error to be thrown in case of throw
+   * @param data Data to be resolved, or function to be called, or error to be thrown in case of throw
    * @param mockOptions Options of the mock
    * @example ```ts
    * // Mock one "eth_accounts" request
    * mockManager.mockRequest("eth_accounts", ["0x..."]);
    * // Persistently mock "eth_chainId" request
    * mockManager.mockRequest("eth_chainId", "0x1", { persistent: true });
+   * // Mock with a dynamical value based on params
+   * // "personal_sign" in this case
+   * mockManager.mockRequest("personal_sign", async (params: any) => {
+   *   let statement = (params as string[])[0];
+   *   return await bobsWallet.signMessage(statement);
+   * });
    * ```
    */
   public mockRequest(
     method: string,
-    data: unknown,
+    data: unknown | ((params: unknown[]) => unknown),
     mockOptions: MockOptions = {}
   ) {
     const { condition, persistent } = mockOptions;

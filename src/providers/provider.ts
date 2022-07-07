@@ -44,15 +44,24 @@ export class Provider extends EventEmitter {
         if (mock.shouldThrow) {
           reject(mock.data);
         } else {
-          resolve({ data: mock.data, callback: mock.triggerCallback });
+          resolve({
+            data: mock.data,
+            callback: mock.triggerCallback,
+          });
         }
       }, mock.timeout || 0);
     });
     const { data, callback } = await promise;
-    if (callback) {
-      callback(data, params);
+    let returnValue: unknown;
+    if (typeof data === "function") {
+      returnValue = await data(params);
+    } else {
+      returnValue = data;
     }
-    return data;
+    if (callback) {
+      callback(returnValue, params);
+    }
+    return returnValue;
   }
 
   private findMock(method: string, params: unknown[]) {

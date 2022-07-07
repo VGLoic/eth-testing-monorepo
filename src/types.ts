@@ -10,5 +10,5 @@ export type MockOptions = {
 
 export type MockRequest = {
   method: string;
-  data: unknown;
+  data: unknown | ((params: unknown[]) => unknown);
 } & MockOptions;

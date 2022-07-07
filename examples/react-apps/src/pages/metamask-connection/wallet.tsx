@@ -149,12 +149,24 @@ function useWallet() {
 
 function Wallet() {
   const { account, chainId, balance } = useWallet();
+  const [signatureResult, setSignatureResult] = React.useState("");
+  const personalSign = React.useCallback(async () => {
+    const ethereum = window.ethereum;
+    const message = "Hello, world!";
+    const result = await ethereum.request({
+      method: "personal_sign",
+      params: [message, account, ""],
+    });
+    setSignatureResult(result);
+  }, [account]);
 
   return (
     <div>
       <div>Account: {account}</div>
       <div>Chain ID: {chainId}</div>
       <div>Balance: {(Number(balance) / 10 ** 18).toFixed(2)}</div>
+      <div data-testid="signatureResult">{signatureResult}</div>
+      <button onClick={personalSign}>Sign</button>
     </div>
   );
 }
