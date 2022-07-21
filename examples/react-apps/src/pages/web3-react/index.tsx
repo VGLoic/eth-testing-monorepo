@@ -14,7 +14,18 @@ function Web3ReactPage() {
 }
 
 function Example() {
-    const { activate, account } = useWeb3React();
+    const { activate, account, library } = useWeb3React();
+
+    const [signature, setSignature] = React.useState("");
+
+    const sign = async () => {
+        if (!library) {
+            throw new Error("Oh no, it's broken :(")
+        }
+        const signer = library.getSigner();
+        const signature = await signer.signMessage("hello");
+        setSignature(signature);
+    }
 
     return (
         <div>
@@ -24,6 +35,15 @@ function Example() {
                 Connect
             </button>
             {account ? <div>Account: {account}</div> : null}
+            {account
+                ? (
+                    <div>
+                        <button onClick={sign}>Sign message</button>
+                        {signature ? <div>Signature: {signature}</div> : null}
+                    </div>
+                )
+                : null
+            }
         </div>
     )
 }

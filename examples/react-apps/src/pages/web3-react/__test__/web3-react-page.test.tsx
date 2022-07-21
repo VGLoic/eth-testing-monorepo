@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { generateTestingUtils } from "eth-testing";
+import { ethers } from "ethers";
 import Web3ReactPage from "..";
 
 describe("Web3 React app", () => {
@@ -21,11 +22,13 @@ describe("Web3 React app", () => {
     afterAll(() => {
         global.window.ethereum = originalEthereum;
     });
-    test("User should be able to see its address after connection", async () => {
+    test("User should be able to see its address after connection and sign a message", async () => {
+        const randomWallet = ethers.Wallet.createRandom();
+
         testingUtils.mockNotConnectedWallet();
 
         testingUtils.mockRequestAccounts(
-            ["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"],
+            [randomWallet.address],
             {
               balance: "0x1bc16d674ec80000",
             }
@@ -35,8 +38,13 @@ describe("Web3 React app", () => {
 
         expect(screen.queryByText(/account/i)).not.toBeInTheDocument();
 
-        userEvent.click(screen.getByRole('button'));
+        userEvent.click(screen.getByRole('button', { name: /connect/i}));
 
-        await screen.findByText(/account: 0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf/i);
+        await screen.findByText(`Account: ${randomWallet.address}`);
+
+        const signature = await randomWallet.signMessage("hello");
+        testingUtils.lowLevel.mockRequest("personal_sign", signature);
+        userEvent.click(screen.getByRole("button", { name: /sign message/i }))
+        await screen.findByText(`Signature: ${signature}`);
     })
 })
