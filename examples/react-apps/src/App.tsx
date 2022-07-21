@@ -14,6 +14,7 @@ import {
 } from "pages/contract-interactions/contract-box";
 import EnsStuff from "pages/ens";
 import WalletConnectConnection from "pages/wallet-connect-connection";
+import Web3ReactPage from "pages/web3-react";
 
 const routes: Route[] = [
   {
@@ -31,6 +32,7 @@ const routes: Route[] = [
     ],
   },
   { path: "ens", element: <EnsStuff /> },
+  { path: "web3-react", element: <Web3ReactPage /> },
 ];
 
 const location = new ReactLocation();
@@ -44,6 +46,7 @@ function App() {
         <Link to="wallet-connect-connection">Wallet Connect Connection</Link>{" "}
         <Link to="contract-interactions">Contract interaction</Link>{" "}
         <Link to="ens">ENS</Link>
+        <Link to="web3-react">Web3 React</Link>
       </div>
       <hr />
       <Outlet />
