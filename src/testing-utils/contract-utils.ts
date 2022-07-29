@@ -23,7 +23,7 @@ type ConditionCache = Record<string, MockCondition>;
 export class ContractUtils {
   private mockManager: MockManager;
   private contractInterface: Interface;
-  private address?: string;
+  public address?: string;
   private conditionCache: ConditionCache;
 
   constructor(
