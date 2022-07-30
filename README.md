@@ -255,9 +255,21 @@ type MockOptions = {
 
 It is sometimes handy to display which JSON-RPC requests are triggered and for each, show the associated mock if it exists. For that, the setup function allows to set the utils in *verbose* mode
 ```ts
+// Log all requests
 const testingUtils = generateTestingUtils({ verbose: true });
+...
+// Do not log mocked requests
+const testingUtils = generateTestingUtils({ verbose: { dismissMocked: true } });
+...
+// Do not log not mocked requests
+const testingUtils = generateTestingUtils({ verbose: { dismissNotMocked: true } });
+...
+// Do not log not mocked requests
+const testingUtils = generateTestingUtils({ verbose: { dismissNotMocked: true } });
+...
+// Log only requests for particular method and dismiss the mocked ones
+const testingUtils = generateTestingUtils({ verbose: { methods: ["eth_getLogs"], dismissMocked: true } });
 ```
-
 ## Contributing :rocket:
 
 Contributions are welcome! Please follow the guidelines in the [contributing document](/CONTRIBUTING.md).

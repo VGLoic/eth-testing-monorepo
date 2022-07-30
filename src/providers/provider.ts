@@ -2,18 +2,31 @@
 import EventEmitter from "events";
 import { MockRequest } from "../types";
 
+type VerboseConfiguration = {
+  methods?: string[];
+  dismissMocked?: boolean;
+  dismissNotMocked?: boolean;
+};
+type Verbose = VerboseConfiguration;
 type ProviderConstructorArgs = {
-  verbose?: boolean;
+  verbose?: boolean | Verbose;
 };
 
 export class Provider extends EventEmitter {
   public requestMocks: Record<string, MockRequest[]> = {};
 
-  public verbose: boolean;
+  public verbose: Verbose;
 
   constructor({ verbose }: ProviderConstructorArgs) {
     super();
-    this.verbose = Boolean(verbose);
+    this.verbose =
+      verbose === false || verbose === undefined
+        ? {
+            methods: [],
+          }
+        : verbose === true
+        ? {}
+        : verbose;
   }
 
   public async request({
@@ -28,12 +41,21 @@ export class Provider extends EventEmitter {
       callback?: (data?: unknown, params?: unknown[]) => void;
     }>((resolve, reject) => {
       const mock = this.findMock(method, params);
-      if (this.verbose) {
-        this.logRequest(method, params, mock);
-      }
       if (!mock) {
+        if (
+          !this.verbose.dismissNotMocked &&
+          (this.verbose.methods ? this.verbose.methods.includes(method) : true)
+        ) {
+          this.logRequest(method, params, mock);
+        }
         resolve({ data: undefined });
         return;
+      }
+      if (
+        !this.verbose.dismissMocked &&
+        (this.verbose.methods ? this.verbose.methods.includes(method) : true)
+      ) {
+        this.logRequest(method, params, mock);
       }
       if (!mock.persistent) {
         this.requestMocks[method] = this.requestMocks[method].filter(
