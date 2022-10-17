@@ -1,5 +1,5 @@
 import { ethers, EventFilter } from "ethers";
-import { Interface, JsonFragment } from "@ethersproject/abi";
+import { Interface, JsonFragment, Fragment } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
@@ -27,8 +27,13 @@ type TxOptions = {
 
 type ConditionCache = Record<string, MockCondition>;
 
+type AbiType = ReadonlyArray<AbiEvent | AbiFunction | AbiError>;
+
 export class ContractUtils<
-  TAbi extends readonly (AbiEvent | AbiFunction | AbiError)[]
+  TAbi extends readonly (
+    | (JsonFragment | Fragment)
+    | (AbiEvent | AbiFunction | AbiError)
+  )[]
 > {
   private mockManager: MockManager;
   private contractInterface: Interface;
@@ -59,7 +64,10 @@ export class ContractUtils<
    * ```
    */
   public mockCall(
-    functionName: ExtractAbiFunctionNames<TAbi, "view" | "pure">,
+    // functionName: ExtractAbiFunctionNames<TAbi, "view" | "pure">,
+    functionName: TAbi extends AbiType
+      ? ExtractAbiFunctionNames<TAbi, "view" | "pure">
+      : string,
     values: readonly any[] | undefined,
     callOptions: CallOptions = {},
     mockOptions: MockOptions = {}
@@ -118,7 +126,10 @@ export class ContractUtils<
    * ```
    */
   public mockTransaction(
-    functionName: ExtractAbiFunctionNames<TAbi, "nonpayable" | "payable">,
+    functionName: TAbi extends AbiType
+      ? ExtractAbiFunctionNames<TAbi, "nonpayable" | "payable">
+      : string,
+    // functionName: ExtractAbiFunctionNames<TAbi, "nonpayable" | "payable">,
     txOptions: TxOptions = {},
     mockOptions: MockOptions = {}
   ) {
@@ -254,7 +265,8 @@ export class ContractUtils<
    * ```
    */
   public mockGetLogs(
-    eventName: ExtractAbiEventNames<TAbi>,
+    // eventName: ExtractAbiEventNames<TAbi>,
+    eventName: TAbi extends AbiType ? ExtractAbiEventNames<TAbi> : string,
     allValues: unknown[][]
   ) {
     const blockNumberMock =
@@ -302,7 +314,8 @@ export class ContractUtils<
    * ```
    */
   public mockEmitLog(
-    eventName: ExtractAbiEventNames<TAbi>,
+    // eventName: ExtractAbiEventNames<TAbi>,
+    eventName: TAbi extends AbiType ? ExtractAbiEventNames<TAbi> : string,
     values: unknown[],
     subscriptionId?: string,
     logOverrides?: Partial<Log>
@@ -372,7 +385,8 @@ export class ContractUtils<
    * @returns The log for the event
    */
   public generateMockLog(
-    eventName: ExtractAbiEventNames<TAbi>,
+    // eventName: ExtractAbiEventNames<TAbi>,
+    eventName: TAbi extends AbiType ? ExtractAbiEventNames<TAbi> : string,
     values: unknown[],
     logOverrides?: Partial<Log>
   ): Log {
