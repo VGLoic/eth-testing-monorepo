@@ -4,7 +4,7 @@ import { ContractUtils } from "./contract-utils";
 import { MockCondition, MockOptions } from "../types";
 import { Provider } from "../providers";
 import { EnsUtils } from "./ens-utils";
-import { AbiError, AbiEvent, AbiFunction, narrow } from "abitype";
+import { AbiError, AbiEvent, AbiFunction } from "abitype";
 import { Fragment } from "ethers/lib/utils";
 import { JsonFragment } from "@ethersproject/abi";
 
@@ -326,16 +326,8 @@ export class TestingUtils {
       | AbiFunction
       | AbiError
     )[]
-  >(
-    abi: TAbi,
-    // abi: readonly (Fragment | JsonFragment | (AbiEvent | AbiFunction | AbiError))[],
-    contractAddress?: string
-  ) {
-    return new ContractUtils<TAbi>(
-      this.mockManager,
-      narrow(abi as any),
-      contractAddress
-    );
+  >(abi: TAbi, contractAddress?: string) {
+    return new ContractUtils<TAbi>(this.mockManager, abi, contractAddress);
   }
 
   /**
