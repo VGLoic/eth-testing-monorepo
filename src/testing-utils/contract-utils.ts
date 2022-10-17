@@ -1,11 +1,18 @@
 import { ethers, EventFilter } from "ethers";
-import { Fragment, Interface, JsonFragment } from "@ethersproject/abi";
+import { Interface, JsonFragment } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Transaction } from "@ethersproject/transactions";
 import { ContractReceipt } from "@ethersproject/contracts";
 import { Log } from "@ethersproject/abstract-provider";
 import { MockManager } from "../mock-manager";
 import { MockCondition, MockOptions } from "../types";
+import {
+  AbiError,
+  AbiEvent,
+  AbiFunction,
+  ExtractAbiEventNames,
+  ExtractAbiFunctionNames,
+} from "abitype";
 
 type CallOptions = {
   contractAddress?: string;
@@ -20,19 +27,17 @@ type TxOptions = {
 
 type ConditionCache = Record<string, MockCondition>;
 
-export class ContractUtils {
+export class ContractUtils<
+  TAbi extends readonly (AbiEvent | AbiFunction | AbiError)[]
+> {
   private mockManager: MockManager;
   private contractInterface: Interface;
   public address?: string;
   private conditionCache: ConditionCache;
 
-  constructor(
-    mockManager: MockManager,
-    abi: readonly (string | JsonFragment | Fragment)[],
-    address?: string
-  ) {
+  constructor(mockManager: MockManager, abi: TAbi, address?: string) {
     this.mockManager = mockManager;
-    this.contractInterface = new Interface(abi);
+    this.contractInterface = new Interface(abi as readonly JsonFragment[]);
     this.address = address;
     this.conditionCache = {};
   }
@@ -54,7 +59,7 @@ export class ContractUtils {
    * ```
    */
   public mockCall(
-    functionName: string,
+    functionName: ExtractAbiFunctionNames<TAbi, "view" | "pure">,
     values: readonly any[] | undefined,
     callOptions: CallOptions = {},
     mockOptions: MockOptions = {}
@@ -113,7 +118,7 @@ export class ContractUtils {
    * ```
    */
   public mockTransaction(
-    functionName: string,
+    functionName: ExtractAbiFunctionNames<TAbi, "nonpayable" | "payable">,
     txOptions: TxOptions = {},
     mockOptions: MockOptions = {}
   ) {
@@ -248,7 +253,10 @@ export class ContractUtils {
    * contractTestingUtils.mockGetLogs("ValueUpdated", [["0"], ["12"]]);
    * ```
    */
-  public mockGetLogs(eventName: string, allValues: unknown[][]) {
+  public mockGetLogs(
+    eventName: ExtractAbiEventNames<TAbi>,
+    allValues: unknown[][]
+  ) {
     const blockNumberMock =
       this.mockManager.findUnconditionalPersistentMock("eth_blockNumber");
     if (!blockNumberMock) {
@@ -294,7 +302,7 @@ export class ContractUtils {
    * ```
    */
   public mockEmitLog(
-    eventName: string,
+    eventName: ExtractAbiEventNames<TAbi>,
     values: unknown[],
     subscriptionId?: string,
     logOverrides?: Partial<Log>
@@ -364,7 +372,7 @@ export class ContractUtils {
    * @returns The log for the event
    */
   public generateMockLog(
-    eventName: string,
+    eventName: ExtractAbiEventNames<TAbi>,
     values: unknown[],
     logOverrides?: Partial<Log>
   ): Log {

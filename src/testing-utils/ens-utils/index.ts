@@ -9,8 +9,8 @@ import {
 } from "./constants";
 
 export class EnsUtils {
-  private ensRegistryWithFallbackUtils: ContractUtils;
-  private publicResolverUtils: ContractUtils;
+  private ensRegistryWithFallbackUtils;
+  private publicResolverUtils;
 
   constructor(mockManager: MockManager) {
     this.ensRegistryWithFallbackUtils = new ContractUtils(
@@ -66,7 +66,7 @@ export class EnsUtils {
       persistent: true,
     });
     this.publicResolverUtils.mockCall(
-      "addr(bytes32)",
+      "addr(bytes32)" as any,
       [ethers.constants.AddressZero],
       undefined,
       { persistent: true }
@@ -112,9 +112,14 @@ export class EnsUtils {
     this.publicResolverUtils.mockCall("supportsInterface", [false], undefined, {
       persistent: true,
     });
-    this.publicResolverUtils.mockCall("addr(bytes32)", [address], callValues, {
-      persistent: true,
-    });
+    this.publicResolverUtils.mockCall(
+      "addr(bytes32)" as any,
+      [address],
+      callValues,
+      {
+        persistent: true,
+      }
+    );
   }
 
   /**

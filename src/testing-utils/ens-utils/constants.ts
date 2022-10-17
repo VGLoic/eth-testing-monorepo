@@ -3,7 +3,7 @@ export const ENS_REGISTRY_WITH_FALLBACK_ADDRESS =
 export const PUBLIC_RESOLVER_ADDRESS =
   "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41";
 
-export const ENS_REGISTRY_WITH_FALLBACK_ABI = [
+export const ENS_REGISTRY_WITH_FALLBACK_ABI = <const>[
   {
     inputs: [{ internalType: "contract ENS", name: "_old", type: "address" }],
     payable: false,
@@ -236,7 +236,7 @@ export const ENS_REGISTRY_WITH_FALLBACK_ABI = [
   },
 ];
 
-export const PUBLIC_RESOLVER_ABI = [
+export const PUBLIC_RESOLVER_ABI = <const>[
   {
     inputs: [{ internalType: "contract ENS", name: "_ens", type: "address" }],
     payable: false,

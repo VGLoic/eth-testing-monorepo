@@ -1,10 +1,10 @@
-import { Fragment, JsonFragment } from "@ethersproject/abi";
 import { ethers } from "ethers";
 import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
 import { MockCondition, MockOptions } from "../types";
 import { Provider } from "../providers";
 import { EnsUtils } from "./ens-utils";
+import { AbiError, AbiEvent, AbiFunction } from "abitype";
 
 export class LowLevelTestingUtils {
   private mockManager: MockManager;
@@ -317,7 +317,7 @@ export class TestingUtils {
    * ```
    */
   public generateContractUtils(
-    abi: (string | JsonFragment | Fragment)[],
+    abi: readonly (AbiEvent | AbiFunction | AbiError)[],
     contractAddress?: string
   ) {
     return new ContractUtils(this.mockManager, abi, contractAddress);

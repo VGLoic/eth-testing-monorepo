@@ -32,6 +32,7 @@
     "format": "prettier src examples/react-apps/src --write"
   },
   "dependencies": {
+    "abitype": "^0.1.6",
     "ethers": "^5.5.4"
   },
   "devDependencies": {
