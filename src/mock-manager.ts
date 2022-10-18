@@ -31,9 +31,9 @@ export class MockManager {
    * // Persistently mock "eth_chainId" request
    * mockManager.mockRequest("eth_chainId", "0x1", { persistent: true });
    * // Mock with a dynamical value based on params
-   * // "personal_sign" in this case
-   * mockManager.mockRequest("personal_sign", async (params: any) => {
-   *   let statement = (params as string[])[0];
+   * // "personal_sign" in this case, `bobsWallet` is externally defined here
+   * mockManager.mockRequest("personal_sign", async (params: unknown[]) => {
+   *   const statement = (params as string[])[0];
    *   return await bobsWallet.signMessage(statement);
    * });
    * ```

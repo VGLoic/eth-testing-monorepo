@@ -31,7 +31,7 @@ export class LowLevelTestingUtils {
   /**
    * Mock a JSON-RPC request
    * @param method JSON-RPC method name
-   * @param data Data to be resolved, or error to be thrown in case of throw
+   * @param data Data to be resolved, or function to be called, or error to be thrown in case of throw
    * @param mockOptions.persistent If true, the mock will persist
    * @param mockOptions.shouldThrow If true, the mocked request will throw, the thrown error is the data field
    * @param mockOptions.timeout Timeout of the request, in milliseconds
@@ -42,11 +42,17 @@ export class LowLevelTestingUtils {
    * lowLevelTestingUtils.mockRequest("eth_accounts", ["0x..."]);
    * // Persistently mock "eth_chainId" request
    * lowLevelTestingUtils.mockRequest("eth_chainId", "0x1", { persistent: true });
+   * // Mock with a dynamical value based on params
+   * // "personal_sign" in this case, `bobsWallet` is externally defined here
+   * mockManager.mockRequest("personal_sign", async (params: unknown[]) => {
+   *   const statement = (params as string[])[0];
+   *   return await bobsWallet.signMessage(statement);
+   * });
    * ```
    */
   public mockRequest(
     method: string,
-    data: unknown,
+    data: unknown | ((params: unknown[]) => unknown),
     mockOptions: MockOptions = {}
   ) {
     this.mockManager.mockRequest(method, data, mockOptions);
