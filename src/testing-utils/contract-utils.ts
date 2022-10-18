@@ -64,7 +64,6 @@ export class ContractUtils<
    * ```
    */
   public mockCall(
-    // functionName: ExtractAbiFunctionNames<TAbi, "view" | "pure">,
     functionName: TAbi extends AbiType
       ? ExtractAbiFunctionNames<TAbi, "view" | "pure">
       : string,
@@ -265,7 +264,6 @@ export class ContractUtils<
    * ```
    */
   public mockGetLogs(
-    // eventName: ExtractAbiEventNames<TAbi>,
     eventName: TAbi extends AbiType ? ExtractAbiEventNames<TAbi> : string,
     allValues: unknown[][]
   ) {
@@ -314,7 +312,6 @@ export class ContractUtils<
    * ```
    */
   public mockEmitLog(
-    // eventName: ExtractAbiEventNames<TAbi>,
     eventName: TAbi extends AbiType ? ExtractAbiEventNames<TAbi> : string,
     values: unknown[],
     subscriptionId?: string,
@@ -385,7 +382,6 @@ export class ContractUtils<
    * @returns The log for the event
    */
   public generateMockLog(
-    // eventName: ExtractAbiEventNames<TAbi>,
     eventName: TAbi extends AbiType ? ExtractAbiEventNames<TAbi> : string,
     values: unknown[],
     logOverrides?: Partial<Log>
