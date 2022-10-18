@@ -128,7 +128,6 @@ export class ContractUtils<
     functionName: TAbi extends AbiType
       ? ExtractAbiFunctionNames<TAbi, "nonpayable" | "payable">
       : string,
-    // functionName: ExtractAbiFunctionNames<TAbi, "nonpayable" | "payable">,
     txOptions: TxOptions = {},
     mockOptions: MockOptions = {}
   ) {
