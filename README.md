@@ -166,8 +166,10 @@ testingUtils.mockRequestAccounts(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"])
 Most of the application interacts with deployed contracts, interactions are generally more complex with contracts, hence a dedicated object has been created for it.
 
 The testing utils expose a `generateContractUtils` method, it allows to generate high level utils for contract interactions based on their ABI.
+
+It is advised to *freeze* the ABI using `as const` [feature](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#readonly-and-const) of TypeScript. By doing so, types will be generated for event and method names when using the contract testing utils. Refer to [ABIType](https://github.com/wagmi-dev/abitype) for additional informations.
 ```ts
-const abi = [...];
+const abi = [...] as const;
 // An address may be optionally given as second argument, advised in case of multiple similar contracts
 const contractTestingUtils = testingUtils.generateContractUtils(abi);
 ```

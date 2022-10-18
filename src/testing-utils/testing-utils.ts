@@ -1,10 +1,12 @@
-import { Fragment, JsonFragment } from "@ethersproject/abi";
 import { ethers } from "ethers";
 import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
 import { MockCondition, MockOptions } from "../types";
 import { Provider } from "../providers";
 import { EnsUtils } from "./ens-utils";
+import { AbiError, AbiEvent, AbiFunction } from "abitype";
+import { Fragment } from "ethers/lib/utils";
+import { JsonFragment } from "@ethersproject/abi";
 
 export class LowLevelTestingUtils {
   private mockManager: MockManager;
@@ -316,11 +318,16 @@ export class TestingUtils {
    * const erc20TestingUtils = testingUtils.generateContractUtils(ERC20_ABI);
    * ```
    */
-  public generateContractUtils(
-    abi: (string | JsonFragment | Fragment)[],
-    contractAddress?: string
-  ) {
-    return new ContractUtils(this.mockManager, abi, contractAddress);
+  public generateContractUtils<
+    TAbi extends readonly (
+      | Fragment
+      | JsonFragment
+      | AbiEvent
+      | AbiFunction
+      | AbiError
+    )[]
+  >(abi: TAbi, contractAddress?: string) {
+    return new ContractUtils<TAbi>(this.mockManager, abi, contractAddress);
   }
 
   /**
