@@ -1,5 +1,8 @@
+import { JsonRPCMethod, JsonRPCMethodName } from "./json-rpc-methods-types";
 import { Provider } from "./providers";
-import { MockOptions, MockRequest, MockCondition } from "./types";
+import { MockOptions, MockRequest, MockCondition, LiteralUnion } from "./types";
+
+const defaultMockOptions = {} as MockOptions;
 
 export class MockManager {
   private provider: Provider;
@@ -38,10 +41,19 @@ export class MockManager {
    * });
    * ```
    */
-  public mockRequest(
-    method: string,
-    data: unknown | ((params: unknown[]) => unknown),
-    mockOptions: MockOptions = {}
+  public mockRequest<
+    TMethod extends JsonRPCMethodName,
+    TOptions extends MockOptions
+  >(
+    method: LiteralUnion<TMethod>,
+    data: TOptions["shouldThrow"] extends true
+      ? unknown
+      :
+          | Extract<JsonRPCMethod, { method: TMethod }>["response"]
+          | ((
+              params: Extract<JsonRPCMethod, { method: TMethod }>["params"]
+            ) => Extract<JsonRPCMethod, { method: TMethod }>["response"]),
+    mockOptions = defaultMockOptions as TOptions
   ) {
     const { condition, persistent } = mockOptions;
     const isConditionalMock = Boolean(condition);
@@ -87,7 +99,10 @@ export class MockManager {
     return this.registerMock(method, mockRequest);
   }
 
-  private registerMock(method: string, mockRequest: MockRequest) {
+  private registerMock(
+    method: LiteralUnion<JsonRPCMethodName>,
+    mockRequest: MockRequest
+  ) {
     const mocks = this.provider.requestMocks[method];
 
     if (!mocks) {
@@ -100,14 +115,16 @@ export class MockManager {
     return this;
   }
 
-  public findUnconditionalPersistentMock(method: string) {
+  public findUnconditionalPersistentMock(
+    method: LiteralUnion<JsonRPCMethodName>
+  ) {
     const mocks = this.provider.requestMocks[method];
     if (!mocks) return false;
     return mocks.find((mock) => mock.persistent && !Boolean(mock.condition));
   }
 
   public findConditionalPersistentMock(
-    method: string,
+    method: LiteralUnion<JsonRPCMethodName>,
     condition: MockCondition
   ) {
     const mocks = this.provider.requestMocks[method];

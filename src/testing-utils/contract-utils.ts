@@ -1,9 +1,6 @@
 import { ethers, EventFilter } from "ethers";
 import { Interface, JsonFragment, Fragment } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
-import { Transaction } from "@ethersproject/transactions";
-import { ContractReceipt } from "@ethersproject/contracts";
-import { Log } from "@ethersproject/abstract-provider";
 import { MockManager } from "../mock-manager";
 import { MockCondition, MockOptions } from "../types";
 import {
@@ -13,6 +10,11 @@ import {
   ExtractAbiEventNames,
   ExtractAbiFunctionNames,
 } from "abitype";
+import {
+  TransactionReceipt,
+  Log,
+  PendingTransaction,
+} from "../json-rpc-methods-types";
 
 type CallOptions = {
   contractAddress?: string;
@@ -209,15 +211,20 @@ export class ContractUtils<
     const txData = txValues
       ? this.contractInterface.encodeFunctionData(functionName, txValues)
       : "0x55241077000000000000000000000000000000000000000000000000000000000000007b";
-    const tx: Transaction = {
+    const tx: PendingTransaction = {
       to: toAddress,
       from: fromAddress,
-      data: txData,
-      chainId: 1,
+      input: txData,
+      chainId: "0x1",
       hash: txHash,
-      nonce: 1,
-      gasLimit: BigNumber.from(1),
-      value: BigNumber.from(0),
+      nonce: "0x1",
+      gasLimit: BigNumber.from(1).toHexString(),
+      value: BigNumber.from(0).toHexString(),
+      r: "0x",
+      s: "0x",
+      v: "0x",
+      type: "0x1",
+      transactionIndex: "0x1",
     };
     const getTxCondition = (params: readonly unknown[]) => {
       const getTxByHashParams = params as [string];
@@ -230,22 +237,22 @@ export class ContractUtils<
     const blockHash =
       "0xdafc0b053f0728212d1a7bf7f12b883107db7a2ef949a28c2483cabaf187255c";
     const defaultContractAddress = "0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf";
-    const txReceipt: ContractReceipt = {
+    const txReceipt: TransactionReceipt = {
       to: toAddress || defaultContractAddress,
       from: fromAddress,
       contractAddress: toAddress || defaultContractAddress,
-      transactionIndex: 1,
-      gasUsed: BigNumber.from(1),
+      transactionIndex: "0x1",
+      gasUsed: BigNumber.from(1).toHexString(),
       logsBloom: "",
       blockHash,
       transactionHash: txHash,
       logs: [],
-      blockNumber: Number(blockNumber),
-      confirmations: 1,
-      cumulativeGasUsed: BigNumber.from(1),
-      effectiveGasPrice: BigNumber.from(1),
-      byzantium: true,
-      type: 1,
+      blockNumber: blockNumber,
+      confirmations: "0x1",
+      cumulativeGasUsed: BigNumber.from(1).toHexString(),
+      effectiveGasPrice: BigNumber.from(1).toHexString(),
+      // byzantium: true,
+      type: "0x1",
     };
     this.mockManager.mockRequest("eth_getTransactionReceipt", txReceipt, {
       condition: getTxCondition,
@@ -285,7 +292,7 @@ export class ContractUtils<
       "eth_getLogs",
       allValues.map((values) =>
         this.generateMockLog(eventName, values, {
-          blockNumber: Number(blockNumber),
+          blockNumber,
         })
       ),
       { condition }
@@ -334,7 +341,7 @@ export class ContractUtils<
     );
 
     const log = this.generateMockLog(eventName, values, {
-      blockNumber: incrementedBlockNumber,
+      blockNumber: `0x${incrementedBlockNumber.toString(16)}`,
       ...logOverrides,
     });
 
@@ -394,17 +401,17 @@ export class ContractUtils<
     );
 
     return {
-      blockNumber: 1,
+      blockNumber: "0x1",
       blockHash:
         "0xdafc0b053f0728212d1a7bf7f12b883107db7a2ef949a28c2483cabaf187255c",
-      transactionIndex: 0,
+      transactionIndex: "0x0",
       removed: false,
       address,
       data,
       topics,
       transactionHash:
         "0xdafc0b053f0728212d1a7bf7f12b883107db7a2ef949a28c2483cabaf187255c",
-      logIndex: 0,
+      logIndex: "0x0",
       ...logOverrides,
     };
   }
