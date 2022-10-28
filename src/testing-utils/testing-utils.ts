@@ -165,9 +165,6 @@ export class TestingUtils {
     // Wallet connect returns number while MetaMask returns hex string
     const hexValue = ethers.utils.hexValue(chainId);
     this.mockManager.mockRequest("eth_chainId", hexValue, { persistent: true });
-    this.mockManager.mockRequest("eth_accounts", "fwfwe", {
-      shouldThrow: true,
-    });
     return this;
   }
 
