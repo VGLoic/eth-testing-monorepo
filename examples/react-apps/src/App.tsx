@@ -15,6 +15,7 @@ import {
 import EnsStuff from "pages/ens";
 import WalletConnectConnection from "pages/wallet-connect-connection";
 import Web3ReactPage from "pages/web3-react";
+import WagmiPage from "pages/wagmi";
 
 const routes: Route[] = [
   {
@@ -33,6 +34,7 @@ const routes: Route[] = [
   },
   { path: "ens", element: <EnsStuff /> },
   { path: "web3-react", element: <Web3ReactPage /> },
+  { path: "wagmi", element: <WagmiPage /> },
 ];
 
 const location = new ReactLocation();
@@ -41,12 +43,13 @@ function App() {
   return (
     <Router location={location} routes={routes}>
       <div>
-        <Link to="/">Home</Link>{" "}
-        <Link to="metamask-connection">MetaMask Connection</Link>{" "}
-        <Link to="wallet-connect-connection">Wallet Connect Connection</Link>{" "}
-        <Link to="contract-interactions">Contract interaction</Link>{" "}
-        <Link to="ens">ENS</Link>
-        <Link to="web3-react">Web3 React</Link>
+        <Link style={{ marginRight: "10px" }} to="/">Home</Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="metamask-connection">MetaMask Connection</Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="wallet-connect-connection">Wallet Connect Connection</Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="contract-interactions">Contract interaction</Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="ens">ENS</Link>
+        <Link style={{ marginRight: "10px" }} to="web3-react">Web3 React</Link>
+        <Link style={{ marginRight: "10px" }} to="wagmi">Wagmi</Link>
       </div>
       <hr />
       <Outlet />
