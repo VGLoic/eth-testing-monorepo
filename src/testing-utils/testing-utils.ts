@@ -1,12 +1,15 @@
 import { ethers } from "ethers";
 import { MockManager } from "../mock-manager";
 import { ContractUtils } from "./contract-utils";
-import { MockCondition, MockOptions } from "../types";
+import { LiteralUnion, MockCondition, MockOptions } from "../types";
 import { Provider } from "../providers";
 import { EnsUtils } from "./ens-utils";
 import { AbiError, AbiEvent, AbiFunction } from "abitype";
 import { Fragment } from "ethers/lib/utils";
 import { JsonFragment } from "@ethersproject/abi";
+import { JsonRPCMethod, JsonRPCMethodName } from "../json-rpc-methods-types";
+
+const defaultMockOptions = {} as MockOptions;
 
 export class LowLevelTestingUtils {
   private mockManager: MockManager;
@@ -50,12 +53,25 @@ export class LowLevelTestingUtils {
    * });
    * ```
    */
-  public mockRequest(
-    method: string,
-    data: unknown | ((params: unknown[]) => unknown),
-    mockOptions: MockOptions = {}
+  public mockRequest<
+    TMethod extends JsonRPCMethodName,
+    TOptions extends MockOptions
+  >(
+    method: LiteralUnion<TMethod>,
+    data: TOptions["shouldThrow"] extends true
+      ? unknown
+      :
+          | Extract<JsonRPCMethod, { method: TMethod }>["response"]
+          | ((
+              params: Extract<JsonRPCMethod, { method: TMethod }>["params"]
+            ) => Extract<JsonRPCMethod, { method: TMethod }>["response"]),
+    mockOptions = defaultMockOptions as TOptions
   ) {
-    this.mockManager.mockRequest(method, data, mockOptions);
+    this.mockManager.mockRequest<JsonRPCMethodName, MockOptions>(
+      method,
+      data,
+      mockOptions
+    );
     return this;
   }
 }
