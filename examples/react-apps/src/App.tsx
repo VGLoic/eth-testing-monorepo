@@ -43,13 +43,27 @@ function App() {
   return (
     <Router location={location} routes={routes}>
       <div>
-        <Link style={{ marginRight: "10px" }} to="/">Home</Link>{" "}
-        <Link style={{ marginRight: "10px" }} to="metamask-connection">MetaMask Connection</Link>{" "}
-        <Link style={{ marginRight: "10px" }} to="wallet-connect-connection">Wallet Connect Connection</Link>{" "}
-        <Link style={{ marginRight: "10px" }} to="contract-interactions">Contract interaction</Link>{" "}
-        <Link style={{ marginRight: "10px" }} to="ens">ENS</Link>
-        <Link style={{ marginRight: "10px" }} to="web3-react">Web3 React</Link>
-        <Link style={{ marginRight: "10px" }} to="wagmi">Wagmi</Link>
+        <Link style={{ marginRight: "10px" }} to="/">
+          Home
+        </Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="metamask-connection">
+          MetaMask Connection
+        </Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="wallet-connect-connection">
+          Wallet Connect Connection
+        </Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="contract-interactions">
+          Contract interaction
+        </Link>{" "}
+        <Link style={{ marginRight: "10px" }} to="ens">
+          ENS
+        </Link>
+        <Link style={{ marginRight: "10px" }} to="web3-react">
+          Web3 React
+        </Link>
+        <Link style={{ marginRight: "10px" }} to="wagmi">
+          Wagmi
+        </Link>
       </div>
       <hr />
       <Outlet />
