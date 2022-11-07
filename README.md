@@ -1,5 +1,6 @@
 # Eth Testing
 
+**:warning: The package is quite yound, any contributions, issues or feedbacks are welcome :warning:**
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -31,15 +32,13 @@ However, dealing with these libraries when testing the application is a hard tas
 
 ## The solution
 
-Most of the popular libraries rely on the same core object, the [Ethereum provider](https://eips.ethereum.org/EIPS/eip-1193). It is the object in charge of interacting with the configured Ethereum node. `Eth Testing` is a simple solution to generate a mock Ethereum provider and utilities in order to properly simulate your blockchain state.
+Most of the popular libraries rely on the same core object, the [Ethereum provider](https://eips.ethereum.org/EIPS/eip-1193). It is the object in charge of interacting with the configured Ethereum node. `Eth Testing` is a simple solution to generate a mock Ethereum provider and associated utilities in order to properly simulate your blockchain state.
 
 ![image](doc/eth-testing-overview.png)
 
 Because the mocking happens at the level of the JSON-RPC requests, the core functionnalities of this package do not make any assumptions on what other libraries or packages are used in order to interact with the blockchain.
 
 In this spirit, this package tries at best to expose testing utilitaries that are not tied to an external library.
-
-**:warning: The package is quite recent, any contributions, issues or feedbacks are welcome :warning:**
 
 ## Installation
 
@@ -137,7 +136,7 @@ The argument is only the provider type, the three choices for now are `"MetaMask
 
 The provider will then need to be injected in the application, this mechanism depends on the implementation details of the application. As an example for MetaMask, provider is injected in the `window` object so as an example, using `jest` hooks one may inject the mock provider as
 ```ts
-// :warning: This only works if the goal is to mock the MetaMask provider
+// This only works if the goal is to mock the MetaMask provider
 beforeAll(() => {
     global.window.ethereum = testingUtils.getProvider();
 });
@@ -155,21 +154,21 @@ afterEach(() => {
 High level mocking functions allows anyone, even without a knowledge of the underlying mechanics to properly mock the interactions with the provider/blockchain. This is the advised way to perform mocking.
 
 The main functions are described below:
-- `mockConnectedWallet`: allows to mock the connected accounts, the chain ID / network and the block number
-```ts
-// The chain ID and block number can be set in the options
-// They default to "0x1" (Ethereum main net) and the block number to "0x1"
-testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"], options);
-```
-- `mockReadonlyProvider`: allows to mock the chain ID / network and the block number, the accounts are mocked to an empty array
+- `mockReadonlyProvider`: allows to mock the chain ID / network and the block number, the accounts are mocked to an empty array. This is the ideal mock when the provider is not associated to a wallet, e.g. a provider based on Infura or Alchemy node URL.
 ```ts
 // The chain ID and block number can be set in the options
 // They default to "0x1" (Ethereum main net) and the block number to "0x1"
 testingUtils.mockReadonlyProvider(options);
 ```
-- `mockNotConnectedWallet`: allows to mock the accounts as an empty array
+- `mockNotConnectedWallet`: allows to mock the accounts as an empty array,
 ```ts
 testingUtils.mockNotConnectedWallet(options);
+```
+- `mockConnectedWallet`: allows to mock the connected accounts, the chain ID / network and the block number,
+```ts
+// The chain ID and block number can be set in the options
+// They default to "0x1" (Ethereum main net) and the block number to "0x1"
+testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"], options);
 ```
 - `mockBalance`: allows to mock the balance of an account
 ```ts
