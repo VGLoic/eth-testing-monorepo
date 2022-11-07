@@ -1,14 +1,46 @@
 # Eth Testing
 
-A set of tools in order to generate a mocked Web3 Provider and simulate blockchain interactions in tests.
+**:warning: The package is quite yound, any contributions, issues or feedbacks are welcome :warning:**
+## Table of Contents
 
-Because the mocking happens at the level of the JSON-RPC requests, the core functionnalities of this package do not make any assumptions on what other libraries or packages, such as [web3.js](https://web3js.readthedocs.io/en/v1.7.0/) or [ethers](https://docs.ethers.io/v5/), are used in order to interact with the blockchain.
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [The problem](#the-problem)
+- [The solution](#the-solution)
+- [Installation](#installation)
+- [Examples](#examples)
+  - [Basic example](#basic-example)
+  - [More examples](#more-examples)
+  - [Almost Real World Application](#almost-real-world-application)
+- [Usage and API description](#usage-and-api-description)
+  - [High levels mocks](#high-levels-mocks)
+  - [Testing contract interactions](#testing-contract-interactions)
+  - [Low levels mocks](#low-levels-mocks)
+  - [Mock options](#mock-options)
+  - [Verbose mode](#verbose-mode)
+- [Contributing :rocket:](#contributing-rocket)
+- [LICENSE](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## The problem
+
+Testing application with blockchain interaction is complex. Very often, codebases use powerful wrapper libraries such as [ethers](https://docs.ethers.io/v5/) or [web3js](https://web3js.readthedocs.io/en/v1.8.0/) in order to abstract away the interactions with Ethereum node.
+
+However, dealing with these libraries when testing the application is a hard task and may be painful. Time is spent on understanding the implementation details of the library and developing an appropriate mock for it. Most importantly, it prevents us on writing [meaningful tests](https://twitter.com/kentcdodds/status/977018512689455106) for the application.
+
+## The solution
+
+Most of the popular libraries rely on the same core object, the [Ethereum provider](https://eips.ethereum.org/EIPS/eip-1193). It is the object in charge of interacting with the configured Ethereum node. `Eth Testing` is a simple solution to generate a mock Ethereum provider and associated utilities in order to properly simulate your blockchain state.
+
+![image](doc/eth-testing-overview.png)
+
+Because the mocking happens at the level of the JSON-RPC requests, the core functionnalities of this package do not make any assumptions on what other libraries or packages are used in order to interact with the blockchain.
 
 In this spirit, this package tries at best to expose testing utilitaries that are not tied to an external library.
 
-**:warning: The package is quite recent, any contributions, issues or feedbacks are welcome :warning:**
-
-## Get started
+## Installation
 
 The recommended way to use Eth-Testing with an application is to install it a development dependency:
 
@@ -20,8 +52,11 @@ Or using `yarn`
 ```console
 yarn add eth-testing --dev
 ```
+## Examples
 
-As a very simple example, let us consider a React app using [metamask-react](https://github.com/VGLoic/metamask-react) for handling MetaMask and tested using [React Testing Library](https://testing-library.com/docs/react-testing-library/intro).
+### Basic example
+
+As a basic example, let us consider a React app using [metamask-react](https://github.com/VGLoic/metamask-react) for handling MetaMask and tested using [React Testing Library](https://testing-library.com/docs/react-testing-library/intro).
 ```ts
 // App.tsx
 function App() {
@@ -64,7 +99,7 @@ describe("app connection", () => {
         expect(screen.getByText(/connected account 0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf on chain id 0x1/)).toBeInTheDocument();
     });
     test("a connected user should be able to see the wallet informations", async () => {
-        // Start with a connected wallet
+        // Start with a connected wallet - MetaMask React will automatically connect the user wallet
         testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
 
         render(<App />);
@@ -74,11 +109,20 @@ describe("app connection", () => {
 })
 ```
 
-## Examples
+### More examples
 
 As a next step, multiple examples of a simple React components with contract interactions are available in the `examples/react-apps` folder. It uses `jest` and `@testing-library` for the tests. 
 
-## Almost Real World Application
+Available examples include
+- MetaMask connection,
+- Wallet Connect connection,
+- [Web3-React](https://github.com/Uniswap/web3-react),
+- [Wagmi](https://wagmi.sh/docs/getting-started),
+- Contract interactions with `ethers` and `web3js`: call, transaction, events,
+- ENS name and address resolutions
+
+
+### Almost Real World Application
 
 For a more serious application with more complete features and tests, one can take a look at the [Rainbow Token application](https://github.com/VGLoic/rainbow-token-frontend).
 
@@ -92,6 +136,7 @@ The argument is only the provider type, the three choices for now are `"MetaMask
 
 The provider will then need to be injected in the application, this mechanism depends on the implementation details of the application. As an example for MetaMask, provider is injected in the `window` object so as an example, using `jest` hooks one may inject the mock provider as
 ```ts
+// This only works if the goal is to mock the MetaMask provider
 beforeAll(() => {
     global.window.ethereum = testingUtils.getProvider();
 });
@@ -109,21 +154,21 @@ afterEach(() => {
 High level mocking functions allows anyone, even without a knowledge of the underlying mechanics to properly mock the interactions with the provider/blockchain. This is the advised way to perform mocking.
 
 The main functions are described below:
-- `mockConnectedWallet`: allows to mock the connected accounts, the chain ID / network and the block number
-```ts
-// The chain ID and block number can be set in the options
-// They default to "0x1" (Ethereum main net) and the block number to "0x1"
-testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"], options);
-```
-- `mockReadonlyProvider`: allows to mock the chain ID / network and the block number, the accounts are mocked to an empty array
+- `mockReadonlyProvider`: allows to mock the chain ID / network and the block number, the accounts are mocked to an empty array. This is the ideal mock when the provider is not associated to a wallet, e.g. a provider based on Infura or Alchemy node URL.
 ```ts
 // The chain ID and block number can be set in the options
 // They default to "0x1" (Ethereum main net) and the block number to "0x1"
 testingUtils.mockReadonlyProvider(options);
 ```
-- `mockNotConnectedWallet`: allows to mock the accounts as an empty array
+- `mockNotConnectedWallet`: allows to mock the accounts as an empty array,
 ```ts
 testingUtils.mockNotConnectedWallet(options);
+```
+- `mockConnectedWallet`: allows to mock the connected accounts, the chain ID / network and the block number,
+```ts
+// The chain ID and block number can be set in the options
+// They default to "0x1" (Ethereum main net) and the block number to "0x1"
+testingUtils.mockConnectedWallet(["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"], options);
 ```
 - `mockBalance`: allows to mock the balance of an account
 ```ts
@@ -275,3 +320,7 @@ const testingUtils = generateTestingUtils({ verbose: { methods: ["eth_getLogs"],
 ## Contributing :rocket:
 
 Contributions are welcome! Please follow the guidelines in the [contributing document](/CONTRIBUTING.md).
+
+## LICENSE
+
+[MIT](LICENSE)
