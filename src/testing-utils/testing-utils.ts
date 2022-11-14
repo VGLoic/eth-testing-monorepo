@@ -341,13 +341,9 @@ export class TestingUtils {
    * ```
    */
   public generateContractUtils<
-    TAbi extends readonly (
-      | Fragment
-      | JsonFragment
-      | AbiEvent
-      | AbiFunction
-      | AbiError
-    )[]
+    TAbi extends
+      | string
+      | readonly (Fragment | JsonFragment | AbiEvent | AbiFunction | AbiError)[]
   >(abi: TAbi, contractAddress?: string) {
     return new ContractUtils<TAbi>(this.mockManager, abi, contractAddress);
   }

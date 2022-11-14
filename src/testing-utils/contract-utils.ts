@@ -32,10 +32,12 @@ type ConditionCache = Record<string, MockCondition>;
 type AbiType = ReadonlyArray<AbiEvent | AbiFunction | AbiError>;
 
 export class ContractUtils<
-  TAbi extends readonly (
-    | (JsonFragment | Fragment)
-    | (AbiEvent | AbiFunction | AbiError)
-  )[]
+  TAbi extends
+    | string
+    | readonly (
+        | (JsonFragment | Fragment)
+        | (AbiEvent | AbiFunction | AbiError)
+      )[]
 > {
   private mockManager: MockManager;
   private contractInterface: Interface;
