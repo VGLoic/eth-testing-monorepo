@@ -7,15 +7,15 @@ type VerboseConfiguration = {
   dismissMocked?: boolean;
   dismissNotMocked?: boolean;
 };
-type Verbose = VerboseConfiguration;
+export type VerboseArgs = boolean | VerboseConfiguration;
 type ProviderConstructorArgs = {
-  verbose?: boolean | Verbose;
+  verbose?: VerboseArgs;
 };
 
 export class Provider extends EventEmitter {
   public requestMocks: Record<string, MockRequest[]> = {};
 
-  public verbose: Verbose;
+  public verbose: VerboseConfiguration;
 
   constructor({ verbose }: ProviderConstructorArgs) {
     super();
