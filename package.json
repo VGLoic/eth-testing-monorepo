@@ -27,9 +27,11 @@
     "lint": "eslint src",
     "test": "jest",
     "test:cover": "jest --coverage",
-    "install:examples": "cd examples/react-apps && npm install",
-    "test:examples": "cd examples/react-apps && npm run test",
-    "format": "prettier src examples/react-apps/src --write"
+    "install:examples:react": "cd examples/react-apps && npm install",
+    "test:examples:react": "cd examples/react-apps && npm run test",
+    "install:examples:node": "cd examples/node-app && npm install",
+    "test:examples:node": "cd examples/node-app && npm run test",
+    "format": "prettier src examples/react-apps/src examples/node-app/src --write"
   },
   "dependencies": {
     "abitype": "^0.1.6",

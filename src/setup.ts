@@ -4,11 +4,12 @@ import {
   Provider,
   CoinbaseProvider,
   VerboseArgs,
+  ProviderType,
 } from "./providers";
 import { TestingUtils } from "./testing-utils";
 
 type GenerateOptions = {
-  providerType?: "MetaMask" | "WalletConnect" | "Coinbase" | "default";
+  providerType?: ProviderType;
   verbose?: VerboseArgs;
 };
 
@@ -34,7 +35,7 @@ export function generateTestingUtils({
       ? new CoinbaseProvider({ verbose })
       : providerType === "WalletConnect"
       ? new WalletConnectProvider({ verbose })
-      : new Provider({ verbose });
+      : new Provider({ verbose, ethTestingProviderType: "default" });
 
   const testingUtils = new TestingUtils(provider);
 

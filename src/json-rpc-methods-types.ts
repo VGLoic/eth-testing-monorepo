@@ -85,6 +85,7 @@ export type Block = {
   size: string;
   gasLimit: string;
   gasUsed: string;
+  baseFeePerGas: string;
   timestamp: string;
   transactions: string[];
   uncles: string[];

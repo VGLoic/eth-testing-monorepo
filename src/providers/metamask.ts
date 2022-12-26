@@ -1,4 +1,4 @@
-import { Provider } from "./provider";
+import { Provider, VerboseArgs } from "./provider";
 
 class MockInternalMetaMask {
   public isUnlocked() {
@@ -6,9 +6,17 @@ class MockInternalMetaMask {
   }
 }
 
+type ProviderConstructorArgs = {
+  verbose?: VerboseArgs;
+};
+
 export class MetaMaskProvider extends Provider {
   public isMetaMask = true;
   public _metamask = new MockInternalMetaMask();
+
+  constructor({ verbose }: ProviderConstructorArgs) {
+    super({ verbose, ethTestingProviderType: "MetaMask" });
+  }
 
   public send(
     methodOrPayload: string | { method: string; params: unknown[] },

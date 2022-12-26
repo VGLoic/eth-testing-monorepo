@@ -8,17 +8,26 @@ type VerboseConfiguration = {
   dismissNotMocked?: boolean;
 };
 export type VerboseArgs = boolean | VerboseConfiguration;
+export type ProviderType =
+  | "MetaMask"
+  | "Coinbase"
+  | "WalletConnect"
+  | "default";
+
 type ProviderConstructorArgs = {
   verbose?: VerboseArgs;
+  ethTestingProviderType: ProviderType;
 };
 
 export class Provider extends EventEmitter {
+  public ethTestingProviderType: ProviderType;
   public requestMocks: Record<string, MockRequest[]> = {};
 
   public verbose: VerboseConfiguration;
 
-  constructor({ verbose }: ProviderConstructorArgs) {
+  constructor({ verbose, ethTestingProviderType }: ProviderConstructorArgs) {
     super();
+    this.ethTestingProviderType = ethTestingProviderType;
     this.verbose =
       verbose === false || verbose === undefined
         ? {

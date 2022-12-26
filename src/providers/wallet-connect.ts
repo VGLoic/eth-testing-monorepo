@@ -1,6 +1,14 @@
-import { Provider } from "./provider";
+import { Provider, VerboseArgs } from "./provider";
+
+type ProviderConstructorArgs = {
+  verbose?: VerboseArgs;
+};
 
 export class WalletConnectProvider extends Provider {
+  constructor({ verbose }: ProviderConstructorArgs) {
+    super({ verbose, ethTestingProviderType: "WalletConnect" });
+  }
+
   async disconnect() {
     return;
   }

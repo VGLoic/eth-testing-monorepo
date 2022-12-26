@@ -28,8 +28,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm run install:examples
-      - run: npm run test:examples
+      - run: npm run install:examples:react
+      - run: npm run test:examples:react
+      - run: npm run install:examples:node
+      - run: npm run test:examples:node
   test:
     runs-on: ubuntu-latest
     needs: [setup]
