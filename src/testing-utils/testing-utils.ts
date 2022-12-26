@@ -103,7 +103,7 @@ export class TestingUtils {
     this.provider = provider;
     this.mockManager = mockManager;
     this.lowLevel = new LowLevelTestingUtils(mockManager);
-    this.ens = new EnsUtils(mockManager);
+    this.ens = new EnsUtils(mockManager, provider.ethTestingProviderType);
     this.balanceConditionCache = {};
   }
 
@@ -345,7 +345,12 @@ export class TestingUtils {
       | string
       | readonly (Fragment | JsonFragment | AbiEvent | AbiFunction | AbiError)[]
   >(abi: TAbi, contractAddress?: string) {
-    return new ContractUtils<TAbi>(this.mockManager, abi, contractAddress);
+    return new ContractUtils<TAbi>(
+      this.mockManager,
+      this.provider.ethTestingProviderType,
+      abi,
+      contractAddress
+    );
   }
 
   /**

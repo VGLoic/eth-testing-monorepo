@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { ContractUtils } from "..";
 import { MockManager } from "../../mock-manager";
+import { ProviderType } from "../../providers";
 import {
   ENS_REGISTRY_WITH_FALLBACK_ABI,
   ENS_REGISTRY_WITH_FALLBACK_ADDRESS,
@@ -12,14 +13,16 @@ export class EnsUtils {
   private ensRegistryWithFallbackUtils;
   private publicResolverUtils;
 
-  constructor(mockManager: MockManager) {
+  constructor(mockManager: MockManager, providerType: ProviderType) {
     this.ensRegistryWithFallbackUtils = new ContractUtils(
       mockManager,
+      providerType,
       ENS_REGISTRY_WITH_FALLBACK_ABI,
       ENS_REGISTRY_WITH_FALLBACK_ADDRESS
     );
     this.publicResolverUtils = new ContractUtils(
       mockManager,
+      providerType,
       PUBLIC_RESOLVER_ABI,
       PUBLIC_RESOLVER_ADDRESS
     );
