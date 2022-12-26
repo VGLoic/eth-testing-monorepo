@@ -126,6 +126,7 @@ export class ContractUtils<
    * @param functionName Name of the function
    * @param txOptions.from Optional address of the sender, fallbacks to the current mocked account
    * @param txOptions.to Optional address of the recipient, fallbacks to the contract address of the utils if specified
+   * @param txOptions.contractAddress Optional contract address address of the receipt, fallbacks to the contract address of the utils if specified
    * @param txOptions.txValues Optional array of values passed to the transaction - useful when dealing with multiple similar calls with different arguments
    * @param mockOptions.persistent If true, the mock will persist
    * @param mockOptions.shouldThrow If true, the mocked request will throw, the thrown error is the data field
