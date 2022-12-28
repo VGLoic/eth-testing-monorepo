@@ -64,7 +64,9 @@ export class LowLevelTestingUtils {
           | Extract<JsonRPCMethod, { method: TMethod }>["response"]
           | ((
               params: Extract<JsonRPCMethod, { method: TMethod }>["params"]
-            ) => Extract<JsonRPCMethod, { method: TMethod }>["response"]),
+            ) =>
+              | Promise<Extract<JsonRPCMethod, { method: TMethod }>["response"]>
+              | Extract<JsonRPCMethod, { method: TMethod }>["response"]),
     mockOptions = defaultMockOptions as TOptions
   ) {
     this.mockManager.mockRequest<JsonRPCMethodName, MockOptions>(

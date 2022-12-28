@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Contributing](#contributing)
+  - [Questions](#questions)
+  - [Reporting Issues](#reporting-issues)
+  - [Suggesting new features](#suggesting-new-features)
+  - [Development](#development)
+  - [Commit message conventions](#commit-message-conventions)
+    - [Commit Message Format](#commit-message-format)
+    - [Type](#type)
+    - [Scope](#scope)
+    - [Subject](#subject)
+    - [Body](#body)
+    - [Footer](#footer)
+    - [Example](#example)
+    - [Revert](#revert)
+  - [Pull requests](#pull-requests)
+  - [Releases](#releases)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Contributing
 
 ## Questions

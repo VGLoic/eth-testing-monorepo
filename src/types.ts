@@ -10,7 +10,7 @@ export type MockOptions = {
 
 export type MockRequest = {
   method: string;
-  data: unknown | ((params: unknown[]) => unknown);
+  data: unknown | ((params: unknown[]) => Promise<unknown>);
 } & MockOptions;
 
 export type LiteralUnion<T extends U, U = string> =

@@ -17,6 +17,7 @@
   - [High levels mocks](#high-levels-mocks)
   - [Testing contract interactions](#testing-contract-interactions)
   - [Low levels mocks](#low-levels-mocks)
+  - [Mocking values using functions](#mocking-values-using-functions)
   - [Mock options](#mock-options)
   - [Verbose mode](#verbose-mode)
 - [Contributing :rocket:](#contributing-rocket)
@@ -277,6 +278,27 @@ testingUtils.lowLevel.emit("accountsChanged", ["0xf61B443A155b07D2b2cAeA2d99715d
 // Simulate 0x138071e4e810f34265bd833be9c5dd96f01bd8a5 as connected account
 testingUtils.lowLevel.mockRequest("eth_accounts", ["0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf"]);
 ```
+
+### Mocking values using functions
+
+A part of the mocking utilities allow to use functions returning or resolving the mocked values instead of directly specifying the mocked values. This functional form allows for arbitrary logic to run before returning the mocked values. It allows in particular to dynamically handle the mocked values based on the params or defer the response.
+
+```ts
+// Example extracted from #61 for deferred responses
+const mockContract = mockWalletConnect.generateContractUtils(ContractABI, CONTRACT_ADDRESS);
+const myFunctionDelay = new Deferred();
+mockContract.mockCall('someFunction', async (params: [callPayload: TransactionCallPayload, blockTag: string]) => {
+    await myFunctionDelay.promise;
+    return ["Example return value"]
+});
+
+// Later, cause the system under test to make the contract call
+// Then assert the in-progress state is correct
+// Finally, trigger the smart contract function to complete
+myFunctionDelay.resolve();
+```
+
+At the moment of writing, only the `mockCall` and the low level utils allow for functional mocking.
 
 ### Mock options
 
