@@ -11,6 +11,7 @@ import {
   ExtractAbiFunctionNames,
 } from "abitype";
 import {
+  JsonRPCMethod,
   TransactionReceipt,
   Log,
   PendingTransaction,
@@ -63,7 +64,7 @@ export class ContractUtils<
   /**
    * Mock a call of the contract
    * @param functionName Name of the function
-   * @param values Array of values to be returned - array is used as ordering of the returned data
+   * @param values Array of values to be returned or function resolving/returning the array of values to be returned - array is used as ordering of the returned data
    * @param callOptions.callValues Optional array of values passed to the call - useful when dealing with multiple similar calls with different arguments
    * @param callOptions.contractAddress Optional address of the contract, fallbacks to the contract address of the utils if specified
    * @param mockOptions.persistent If true, the mock will persist
@@ -74,13 +75,20 @@ export class ContractUtils<
    * @example ```ts
    * // Mock next call to `value` function with return value `12`
    * contractUtils.mockCall("value", ["12"]);
+   * // Mock next call to `value` function with return value `12`
+   * contractUtils.mockCall("value", async () => {doSomething(); return ["12"];});
    * ```
    */
   public mockCall(
     functionName: TAbi extends AbiType
       ? ExtractAbiFunctionNames<TAbi, "view" | "pure">
       : string,
-    values: readonly any[] | undefined,
+    values:
+      | readonly unknown[]
+      | ((
+          params: Extract<JsonRPCMethod, { method: "eth_call" }>
+        ) => Promise<readonly unknown[]> | readonly unknown[])
+      | undefined,
     callOptions: CallOptions = {},
     mockOptions: MockOptions = {}
   ) {
@@ -110,11 +118,21 @@ export class ContractUtils<
       };
       this.conditionCache[conditionKey] = condition;
     }
-    const callResult = this.contractInterface.encodeFunctionResult(
-      functionName,
-      values
-    );
-    this.mockManager.mockRequest("eth_call", callResult, {
+    const deriveCallResult = async (params: unknown) => {
+      let functionValues: readonly any[] | undefined;
+      if (typeof values === "function") {
+        functionValues = await values(
+          params as Extract<JsonRPCMethod, { method: "eth_call" }>
+        );
+      } else {
+        functionValues = values;
+      }
+      return this.contractInterface.encodeFunctionResult(
+        functionName,
+        functionValues
+      );
+    };
+    this.mockManager.mockRequest("eth_call", deriveCallResult, {
       condition,
       ...mockOptions,
     });
