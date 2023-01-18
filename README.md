@@ -1,6 +1,6 @@
 # Eth Testing
 
-**:warning: The package is quite yound, any contributions, issues or feedbacks are welcome :warning:**
+**:warning: The package is quite young, any contributions, issues or feedbacks are welcome :warning:**
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
