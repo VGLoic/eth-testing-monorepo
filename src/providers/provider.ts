@@ -11,6 +11,7 @@ export type ProviderType =
   | "MetaMask"
   | "Coinbase"
   | "WalletConnect"
+  | "WalletConnect-EthereumProvider"
   | "default";
 
 type ProviderConstructorArgs = {
@@ -35,6 +36,13 @@ export class Provider extends EventEmitter {
         : verbose === true
         ? {}
         : verbose;
+  }
+
+  public sendAsync(): void {
+    console.warn(
+      "This method is deprecated and should not be used anymore. Please update the code in order to rely on `request` method instead."
+    );
+    return;
   }
 
   public async request({
