@@ -16,6 +16,7 @@ import EnsStuff from "pages/ens";
 import WalletConnectConnection from "pages/wallet-connect-connection";
 import Web3ReactPage from "pages/web3-react";
 import WagmiPage from "pages/wagmi";
+import WalletConnectV2Connection from "pages/wallet-connect-v2";
 
 const routes: Route[] = [
   {
@@ -35,6 +36,7 @@ const routes: Route[] = [
   { path: "ens", element: <EnsStuff /> },
   { path: "web3-react", element: <Web3ReactPage /> },
   { path: "wagmi", element: <WagmiPage /> },
+  { path: "wallet-connect-v2", element: <WalletConnectV2Connection /> },
 ];
 
 const location = new ReactLocation();
@@ -63,6 +65,9 @@ function App() {
         </Link>
         <Link style={{ marginRight: "10px" }} to="wagmi">
           Wagmi
+        </Link>
+        <Link style={{ marginRight: "10px" }} to="wallet-connect-v2">
+          Wallet Connect V2
         </Link>
       </div>
       <hr />
