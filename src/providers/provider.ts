@@ -12,6 +12,7 @@ export type ProviderType =
   | "Coinbase"
   | "WalletConnect"
   | "WalletConnect-EthereumProvider"
+  | "WalletConnect-UniversalProvider"
   | "default";
 
 type ProviderConstructorArgs = {

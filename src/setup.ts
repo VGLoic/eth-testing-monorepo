@@ -6,6 +6,7 @@ import {
   VerboseArgs,
   ProviderType,
   WalletConnectEthereumProvider,
+  WalletConnectUniversalProvider,
 } from "./providers";
 import { TestingUtils } from "./testing-utils";
 
@@ -38,6 +39,8 @@ export function generateTestingUtils({
       ? new WalletConnectProvider({ verbose })
       : providerType === "WalletConnect-EthereumProvider"
       ? new WalletConnectEthereumProvider({ verbose })
+      : providerType === "WalletConnect-UniversalProvider"
+      ? new WalletConnectUniversalProvider({ verbose })
       : new Provider({ verbose, ethTestingProviderType: "default" });
 
   const testingUtils = new TestingUtils(provider);
