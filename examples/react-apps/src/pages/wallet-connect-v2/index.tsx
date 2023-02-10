@@ -214,6 +214,8 @@ function WalletConnectV2Connection() {
         try {
             const { chainId, account } = await connectWallet(providers);
             dispatch({ type: 'connected', payload: { account, chainId } });
+
+            // REMIND ME: clarify event subscription
         } catch (err) {
             console.error(err);
             dispatch({ type: 'initialized' });
