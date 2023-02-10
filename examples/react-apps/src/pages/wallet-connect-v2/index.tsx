@@ -105,29 +105,136 @@ async function connectWallet(providers: Providers) {
     console.log("accounts: ", accounts);
 
     providers.getWeb3Modal().closeModal();
+
+    return {
+        chainId: 1,
+        account: accounts[0]
+    }
+}
+
+type State = {
+    status: 'initializing';
+    account: null;
+    chainId: null;
+} | {
+    status: 'connecting';
+    account: null;
+    chainId: null;
+} | {
+    status: 'connected';
+    account: string;
+    chainId: number;
+} | {
+    status: 'notConnected';
+    account: null;
+    chainId: null;
+}
+
+type Action =
+  | {
+      type: "connected";
+      payload: {
+        account: string;
+        chainId: number;
+      };
+    }
+  | {
+      type: "accountChanged";
+      payload: {
+        account: string;
+      };
+    }
+  | {
+      type: "chainChanged";
+      payload: {
+        chainId: number;
+      };
+    }
+  | {
+      type: "disconnected";
+    }
+  | {
+      type: "initialized";
+    };
+
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "initialized":
+            return {
+                status: 'notConnected',
+                account: null,
+                chainId: null
+            }
+        case "connected":
+            return {
+                status: 'connected',
+                account: action.payload.account,
+                chainId: action.payload.chainId
+            }
+        case "accountChanged":
+            if (state.status !== 'connected') return state;
+            return {
+                ...state,
+                account: action.payload.account
+            }
+        case "chainChanged":
+            if (state.status !== 'connected') return state;
+            return {
+                ...state,
+                chainId: action.payload.chainId
+            }
+        case "disconnected":
+            return {
+                status: 'notConnected',
+                account: null,
+                chainId: null
+            }
+    }
+}
+
+const initialState: State = {
+    status: 'initializing',
+    account: null,
+    chainId: null
 }
 
 const providers = new Providers();
 
 function WalletConnectV2Connection() {
-    const [connected, setConnected] = React.useState(false);
+    const [state, dispatch] = React.useReducer(reducer, initialState);
 
     React.useEffect(() => {
-        initProviders(providers);
+        initProviders(providers).then(() => dispatch({ type: 'initialized' }));
     }, [])
 
     const connect = async () => {
-        await connectWallet(providers);
-        setConnected(true)
+        if (state.status !== 'notConnected') {
+            throw new Error(`'connect' is only callable during status 'notConnected', got status ${state.status}`)
+        }
+        try {
+            const { chainId, account } = await connectWallet(providers);
+            dispatch({ type: 'connected', payload: { account, chainId } });
+        } catch (err) {
+            console.error(err);
+            dispatch({ type: 'initialized' });
+        }
     }
 
-    if (!connected) {
+    if (state.status === 'initializing') return null;
+
+    if (state.status === 'notConnected') {
         return <button onClick={connect}>Connect</button>
     }
     
+    if (state.status === 'connecting') return <div>Connecting...</div>
+
     return (
         <div>
-            Connected!
+            <h1>Connected!</h1>
+            <div>
+                <div>Account: {state.account}</div>
+                <div>Chain ID: {state.chainId}</div>
+            </div>
         </div>
     )
 }
