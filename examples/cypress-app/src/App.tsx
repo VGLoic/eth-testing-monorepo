@@ -1,18 +1,22 @@
 import { useState } from "react";
 import "./App.css";
-import { isMetaMaskInstalled } from "./utils/metamask";
+import { getWalletInfo, isMetaMaskInstalled } from "./utils/metamask";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [accounts, setAccounts] = useState<string[]>([]);
+  const [walletInfo, setWalletInfo] = useState<{
+    balance: string;
+    account: string;
+    chainId: string;
+  } | null>(null);
 
   const onConnect = async () => {
     setLoading(true);
     try {
-      const { ethereum } = window as any;
-      const result = await ethereum.request({ method: "eth_requestAccounts" });
-      setAccounts(result);
+      const { account, balance, chainId } = await getWalletInfo();
+      setError(null);
+      setWalletInfo({ account, balance, chainId });
     } catch (error) {
       console.error(error);
       setError(`Unexpected error happened: ${JSON.stringify(error)}`);
@@ -50,13 +54,13 @@ function App() {
           ) : error ? (
             <p>Error: {error}</p>
           ) : (
-            <ul>
-              {accounts.map((acc, idx) => (
-                <li key={acc}>
-                  Account({idx + 1}): {acc}
-                </li>
-              ))}
-            </ul>
+            walletInfo && (
+              <div>
+                <p>Address: {walletInfo.account}</p>
+                <p>Balance: {walletInfo.balance}</p>
+                <p>Chain ID: {walletInfo.chainId}</p>
+              </div>
+            )
           )}
         </div>
         <p>
