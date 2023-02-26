@@ -174,7 +174,8 @@ export class ContractUtils<
     const isWalletProvider =
       this.ethTestingProviderType === "MetaMask" ||
       this.ethTestingProviderType === "Coinbase" ||
-      this.ethTestingProviderType === "WalletConnect";
+      this.ethTestingProviderType === "WalletConnect" ||
+      this.ethTestingProviderType === "WalletConnect-EthereumProvider";
     if (isWalletProvider) {
       const accountMock =
         this.mockManager.findUnconditionalPersistentMock("eth_accounts");

@@ -5,6 +5,8 @@ import {
   CoinbaseProvider,
   VerboseArgs,
   ProviderType,
+  WalletConnectEthereumProvider,
+  WalletConnectUniversalProvider,
 } from "./providers";
 import { TestingUtils } from "./testing-utils";
 
@@ -35,6 +37,10 @@ export function generateTestingUtils({
       ? new CoinbaseProvider({ verbose })
       : providerType === "WalletConnect"
       ? new WalletConnectProvider({ verbose })
+      : providerType === "WalletConnect-EthereumProvider"
+      ? new WalletConnectEthereumProvider({ verbose })
+      : providerType === "WalletConnect-UniversalProvider"
+      ? new WalletConnectUniversalProvider({ verbose })
       : new Provider({ verbose, ethTestingProviderType: "default" });
 
   const testingUtils = new TestingUtils(provider);
