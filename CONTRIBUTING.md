@@ -1,6 +1,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+**Table of Contents** _generated with [DocToc](https://github.com/thlorenz/doctoc)_
 
 - [Contributing](#contributing)
   - [Questions](#questions)
@@ -131,4 +132,6 @@ Use an appropriate commit type. Be especially careful with breaking changes.
 
 ## Releases
 
-For each new commit added to `main` with `git push` or by merging a pull request or merging from another branch, a GitHub action is triggered and runs the `semantic-release` command to make a release if there are codebase changes since the last release that affect the package functionalities.
+Releases are handled using [changesets](https://github.com/changesets/changesets).
+
+If a change should trigger a new release, please add a changeset using `npx changeset`. Additional informations may be found at `.changeset/README.md`.

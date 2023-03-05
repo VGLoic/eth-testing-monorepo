@@ -1,0 +1,6 @@
+# production
+lib
+dist
+
+# testing
+coverage

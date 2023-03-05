@@ -1,75 +1,29 @@
 {
-  "name": "eth-testing",
-  "version": "0.0.1-semantic-release",
-  "description": "A set of tools in order to generate a mock Web3 Provider and simulate blockchain interactions in tests.",
-  "keywords": [
-    "test",
-    "web3"
-  ],
-  "license": "MIT",
-  "author": "Loïc Vincent-Genod (https://github.com/VGLoic)",
-  "homepage": "https://github.com/VGLoic/eth-testing",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/VGLoic/eth-testing.git"
-  },
-  "bugs": {
-    "url": "https://github.com/VGLoic/eth-testing/issues"
-  },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "files": [
-    "lib",
-    "src"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "lint": "eslint src",
-    "test": "jest",
-    "test:cover": "jest --coverage",
-    "install:examples:react": "cd examples/react-apps && npm install",
-    "test:examples:react": "cd examples/react-apps && npm run test",
-    "install:examples:node": "cd examples/node-app && npm install",
-    "test:examples:node": "cd examples/node-app && npm run test",
-    "format": "prettier src examples/react-apps/src examples/node-app/src --write"
-  },
-  "dependencies": {
-    "abitype": "^0.1.6",
-    "ethers": "^5.5.4"
-  },
-  "devDependencies": {
-    "@types/jest": "^27.5.0",
-    "@typescript-eslint/eslint-plugin": "^4.12.0",
-    "@typescript-eslint/parser": "^4.12.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.17.0",
-    "eslint-config-prettier": "^7.1.0",
-    "eslint-config-react-app": "^6.0.0",
-    "eslint-plugin-flowtype": "^5.2.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.1.3",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.25.1",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-testing-library": "^3.9.0",
-    "husky": "^4.3.7",
-    "lint-staged": "^10.5.3",
-    "prettier": "^2.2.1",
-    "semantic-release": "^18.0.1",
-    "ts-jest": "^28.0.2",
-    "typescript": "^4.1.3"
-  },
-  "lint-staged": {
-    "src/**/*.{ts,tsx,js,jsx}": [
-      "eslint --max-warnings=0"
+    "name": "eth-testing-monorepo",
+    "version": "0.0.0",
+    "private": true,
+    "workspaces": [
+      "examples/*",
+      "packages/*"
     ],
-    "src/**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "scripts": {
+      "build": "turbo run build",
+      "lint": "turbo run lint",
+      "test": "turbo run test",
+      "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+      "format:check": "prettier --check \"**/*.{ts,tsx,md}\" --help",
+      "release": "turbo run build lint test && changeset version && changeset publish"
+    },
+    "devDependencies": {
+      "prettier": "latest",
+      "turbo": "latest"
+    },
+    "engines": {
+      "node": ">=14.0.0"
+    },
+    "dependencies": {
+      "@changesets/cli": "^2.26.0"
+    },
+    "packageManager": "npm@8.5.5"
   }
-}
+  
