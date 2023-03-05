@@ -13,23 +13,45 @@ jobs:
           node-version: '16.x'
           cache: npm
       - run: npm ci
-  example-tests:
-    runs-on: ubuntu-latest
-    needs: [setup]
-    name: Example Test
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16.x'
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: npm run install:examples:react
-      - run: npm run test:examples:react
-      - run: npm run install:examples:node
-      - run: npm run test:examples:node
+  format:
+      runs-on: ubuntu-latest
+      needs: [setup]
+      name: Check formatting
+      steps:
+        - uses: actions/checkout@v2
+        - name: Setup node
+          uses: actions/setup-node@v2
+          with:
+            node-version: '16.x'
+            cache: npm
+        - run: npm ci
+        - run: npm run format:check
+  lint:
+      runs-on: ubuntu-latest
+      needs: [setup]
+      name: Lint
+      steps:
+        - uses: actions/checkout@v2
+        - name: Setup node
+          uses: actions/setup-node@v2
+          with:
+            node-version: '16.x'
+            cache: npm
+        - run: npm ci
+        - run: npm run lint
+  build:
+      runs-on: ubuntu-latest
+      needs: [setup]
+      name: Build
+      steps:
+        - uses: actions/checkout@v2
+        - name: Setup node
+          uses: actions/setup-node@v2
+          with:
+            node-version: '16.x'
+            cache: npm
+        - run: npm ci
+        - run: npm run build
   test:
     runs-on: ubuntu-latest
     needs: [setup]
@@ -42,6 +64,4 @@ jobs:
           node-version: '16.x'
           cache: npm
       - run: npm ci
-      - run: npm run build
       - run: npm test
-      - run: npm run test:cover

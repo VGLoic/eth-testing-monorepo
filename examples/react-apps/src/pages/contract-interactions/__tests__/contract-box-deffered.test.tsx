@@ -10,14 +10,14 @@ class Deferred {
 
   constructor() {
     const promise = new Promise((res) => {
-        this.res = res;
+      this.res = res;
     });
     this.promise = promise;
   }
 
   public resolve() {
     if (!this.res) {
-        throw new Error("Nothing to resolve")
+      throw new Error("Nothing to resolve");
     }
     this.res(null);
   }
@@ -54,8 +54,8 @@ describe("ContractBox Deffered calls", () => {
     const contractTestingUtils = testingUtils.generateContractUtils(ABI);
 
     contractTestingUtils.mockCall("value", async () => {
-      await myFunctionDelay.promise
-      return ["100"]
+      await myFunctionDelay.promise;
+      return ["100"];
     });
     contractTestingUtils.mockGetLogs("ValueUpdated", [["0"], ["12"]]);
 
@@ -80,8 +80,8 @@ describe("ContractBox Deffered calls", () => {
     const contractTestingUtils = testingUtils.generateContractUtils(ABI);
 
     contractTestingUtils.mockCall("value", async () => {
-      await myFunctionDelay.promise
-      return ["100"]
+      await myFunctionDelay.promise;
+      return ["100"];
     });
     contractTestingUtils.mockGetLogs("ValueUpdated", [["0"], ["12"]]);
 

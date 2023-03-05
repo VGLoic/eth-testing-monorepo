@@ -18,25 +18,33 @@ describe("apps test", () => {
   describe("Ethers app", () => {
     beforeEach(async () => {
       mainnetUtils.mockReadonlyProvider();
-  
+
       jest
         .spyOn(ethersProvider, "deriveProvider")
         .mockReturnValue(
           new ethers.providers.Web3Provider(mainnetUtils.getProvider())
         );
     });
-  
+
     test("it should log the proper balances", async () => {
       const consoleSpy = jest.spyOn(console, "log");
       const decimals = 18;
       daiUtils.mockCall("decimals", [decimals]);
-      daiUtils.mockCall("balanceOf", [ethers.utils.parseUnits("10", decimals)], {
-        callValues: [senderAddress],
-      });
-      daiUtils.mockCall("balanceOf", [ethers.utils.parseUnits("23", decimals)], {
-        callValues: [recipientAddress],
-      });
-  
+      daiUtils.mockCall(
+        "balanceOf",
+        [ethers.utils.parseUnits("10", decimals)],
+        {
+          callValues: [senderAddress],
+        }
+      );
+      daiUtils.mockCall(
+        "balanceOf",
+        [ethers.utils.parseUnits("23", decimals)],
+        {
+          callValues: [recipientAddress],
+        }
+      );
+
       daiUtils.mockTransaction("transfer", undefined, {
         triggerCallback: () => {
           daiUtils.mockCall(
@@ -51,39 +59,47 @@ describe("apps test", () => {
           );
         },
       });
-  
+
       await ethersApp();
-  
+
       expect(consoleSpy).toHaveBeenCalledTimes(4);
       expect(consoleSpy).toHaveBeenNthCalledWith(1, "10.0");
       expect(consoleSpy).toHaveBeenNthCalledWith(2, "23.0");
       expect(consoleSpy).toHaveBeenNthCalledWith(3, "9.0");
       expect(consoleSpy).toHaveBeenNthCalledWith(4, "24.0");
     });
-  })
+  });
 
   describe("Web3JS app", () => {
     beforeEach(async () => {
       mainnetUtils.mockReadonlyProvider();
-  
+
       jest
         .spyOn(web3jsProvider, "deriveProvider")
         .mockReturnValue(mainnetUtils.getProvider() as any);
     });
-  
+
     test("it should log the proper balances", async () => {
       const consoleSpy = jest.spyOn(console, "log");
       const decimals = 18;
-      const decimalsBN = Web3.utils.toBN((10**Number(decimals)).toString());
+      const decimalsBN = Web3.utils.toBN((10 ** Number(decimals)).toString());
 
       daiUtils.mockCall("decimals", [decimals]);
-      daiUtils.mockCall("balanceOf", [Web3.utils.toBN(10).mul(decimalsBN).toString()], {
-        callValues: [senderAddress],
-      });
-      daiUtils.mockCall("balanceOf", [Web3.utils.toBN(23).mul(decimalsBN).toString()], {
-        callValues: [recipientAddress],
-      });
-  
+      daiUtils.mockCall(
+        "balanceOf",
+        [Web3.utils.toBN(10).mul(decimalsBN).toString()],
+        {
+          callValues: [senderAddress],
+        }
+      );
+      daiUtils.mockCall(
+        "balanceOf",
+        [Web3.utils.toBN(23).mul(decimalsBN).toString()],
+        {
+          callValues: [recipientAddress],
+        }
+      );
+
       daiUtils.mockTransaction("transfer", undefined, {
         triggerCallback: () => {
           daiUtils.mockCall(
@@ -98,15 +114,14 @@ describe("apps test", () => {
           );
         },
       });
-  
+
       await web3jsApp();
-  
+
       expect(consoleSpy).toHaveBeenCalledTimes(4);
       expect(consoleSpy).toHaveBeenNthCalledWith(1, "10");
       expect(consoleSpy).toHaveBeenNthCalledWith(2, "23");
       expect(consoleSpy).toHaveBeenNthCalledWith(3, "9");
       expect(consoleSpy).toHaveBeenNthCalledWith(4, "24");
     });
-  })
-
+  });
 });
