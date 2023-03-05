@@ -26,7 +26,7 @@
       "@changesets/cli": "^2.26.0"
     },
     "lint-staged": {
-      "packages/**/.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
+      "packages/**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
         "turbo run lint",
         "prettier --write \"**/*.{ts,tsx,md}\""
       ]
