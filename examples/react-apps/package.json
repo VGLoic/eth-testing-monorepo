@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "SKIP_PREFLIGHT_CHECK=true rescripts start",
-    "build": "SKIP_PREFLIGHT_CHECK=true rescripts build",
-    "test": "SKIP_PREFLIGHT_CHECK=true rescripts test",
+    "start": "SKIP_PREFLIGHT_CHECK=true react-scripts start",
+    "test": "SKIP_PREFLIGHT_CHECK=true react-scripts test --no-cache --watchAll=false",
     "hardhat:compile": "hardhat compile",
     "hardhat:deploy": "hardhat run scripts/deploy.js",
     "hardhat:node": "hardhat node"
@@ -42,7 +41,7 @@
     "@rescripts/rescript-use-tslint-config": "^0.0.7",
     "chai": "^4.3.6",
     "dotenv": "^16.0.1",
-    "eth-testing": "file:../..",
+    "eth-testing": "*",
     "ethereum-waffle": "^3.4.4",
     "hardhat": "^2.9.4",
     "ramda": "^0.28.0",
