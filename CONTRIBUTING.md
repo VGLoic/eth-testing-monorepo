@@ -30,7 +30,7 @@ If you have questions about implementation details, help or support, then please
 
 ## Reporting Issues
 
-If you have found what you think is a bug, please [file an issue](https://github.com/VGLoic/eth-testing/issues/new).
+If you have found what you think is a bug, please [file an issue](https://github.com/VGLoic/eth-testing-monorepo/issues/new).
 
 ## Suggesting new features
 
