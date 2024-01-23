@@ -143,7 +143,7 @@ The first step is to generate the utils
 const testingUtils = generateTestingUtils({ providerType: "MetaMask" });
 ```
 
-The argument is only the provider type, the three choices for now are `"MetaMask"`, `Coinbase`, `"WalletConnect"` or `"default"`.
+The argument is only the provider type, the four choices for now are `"MetaMask"`, `Coinbase`, `"WalletConnect"` or `"default"`.
 
 The provider will then need to be injected in the application, this mechanism depends on the implementation details of the application. As an example for MetaMask, provider is injected in the `window` object so as an example, using `jest` hooks one may inject the mock provider as
 
