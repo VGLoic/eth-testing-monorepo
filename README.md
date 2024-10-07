@@ -2,6 +2,9 @@
 
 **A set of tools in order to generate a mock Ethereum Provider and simulate blockchain interactions in tests**
 
+> [!WARNING]
+> This repository is no longer maintained. Thanks to those who contributed and used this package.
+
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
